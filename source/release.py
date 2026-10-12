@@ -68,7 +68,8 @@ if not any(n.endswith("ic_stat.png") for n in z.namelist()): fail("ic_stat icon 
 if z.testzip(): fail("zip corrupt")
 html = z.read("assets/index.html").decode()
 if f"const APP_VER = {code}," not in html: fail("app ke andar APP_VER manifest se alag hai")
-if f'"Aapke paas v{name} hai' not in html: fail("app ke andar versionName manifest se alag hai")
+if f"\u00B7  v{name}\"" not in html: fail("app ke andar versionName manifest se alag hai")
+if 'id="updbar"' not in html or 'id="upd"' in html: fail("update bar/popup galat")
 for need in ("https://whatsapp.com/channel/0029VbBrPE50bIdlNTKXtr1S", "instagram.com/ss_jewellers_jaora", "setTicker(", "loadCfg"):
     if need not in html: fail(f"index.html me {need} nahi mila")
 if "ss__jewellers" in html: fail("purana instagram handle mila")

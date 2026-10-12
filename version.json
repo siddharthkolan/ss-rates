@@ -1,6 +1,6 @@
 {
-  "versionCode": 21,
-  "versionName": "2.8",
+  "versionCode": 22,
+  "versionName": "2.8.1",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "Phone notification"
+  "notes": "Update ab ek line + button"
 }

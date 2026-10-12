@@ -178,50 +178,42 @@ vm = re.search(r'android:versionCode="(\d+)"', open(os.path.join(root, "AndroidM
 VC = int(vm.group(1))
 VER_URL = "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/version.json"
 UPD_CSS = """
-  #upd{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
-    background:rgba(42,36,24,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:calc(2 * var(--u))}
-  #upd[hidden]{display:none}
-  #upd .ubox{width:100%;max-width:calc(36 * var(--u));text-align:center;padding:calc(2.6 * var(--u)) calc(2.2 * var(--u));
-    border-radius:calc(2.4 * var(--u));background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.85);
-    -webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);
-    box-shadow:0 calc(1 * var(--u)) calc(4 * var(--u)) rgba(60,45,15,.3),inset 0 1px 0 rgba(255,255,255,.95)}
-  #upd .uic{font-size:calc(6 * var(--u));line-height:1.1;display:inline-block;animation:bounce .9s infinite}
-  #upd #upfun{color:var(--ink);font-weight:600;font-size:calc(1.5 * var(--u))}
-  #upd h2{font-size:calc(2 * var(--u));margin-top:calc(1 * var(--u));color:var(--gold)}
-  #upd p{font-size:calc(1.35 * var(--u));color:var(--muted);margin-top:calc(.7 * var(--u));white-space:pre-line}
-  #upd .ubtn{display:block;width:100%;margin-top:calc(1.4 * var(--u));padding:calc(1.2 * var(--u));border-radius:calc(3 * var(--u));
-    font:600 calc(1.5 * var(--u)) inherit;font-family:inherit;text-decoration:none;text-align:center;border:0;cursor:pointer;
-    background:linear-gradient(135deg,#c79a3b,#a67a22);color:#fff;box-shadow:0 calc(.4 * var(--u)) calc(1.4 * var(--u)) rgba(166,122,34,.4)}
-  #upd .ubtn.ghost{background:rgba(255,255,255,.7);color:var(--ink);box-shadow:none;border:1px solid rgba(255,255,255,.9)}
+  #updbar{display:flex;align-items:center;gap:calc(1 * var(--u));border-radius:calc(2 * var(--u));padding:calc(.55 * var(--u)) calc(.6 * var(--u)) calc(.55 * var(--u)) 0;
+    background:rgba(255,248,225,.62);border:1px solid rgba(255,255,255,.9);overflow:hidden;
+    -webkit-backdrop-filter:blur(14px) saturate(1.5);backdrop-filter:blur(14px) saturate(1.5);
+    box-shadow:0 calc(.4 * var(--u)) calc(1.6 * var(--u)) rgba(166,122,34,.2)}
+  #updbar[hidden]{display:none}
+  #updbar .umq{flex:1;min-width:0;overflow:hidden}
+  #uptxt{display:inline-block;white-space:nowrap;padding-left:100%;font-weight:600;color:var(--ink);
+    font-size:calc(1.35 * var(--u));animation:tkmove var(--dur,18s) linear infinite}
+  #upgo{flex:none;display:inline-block;padding:calc(.8 * var(--u)) calc(1.6 * var(--u));border-radius:calc(3 * var(--u));
+    font-family:inherit;font-weight:700;font-size:calc(1.3 * var(--u));text-decoration:none;white-space:nowrap;
+    background:linear-gradient(135deg,#c79a3b,#a67a22);color:#fff;box-shadow:0 calc(.3 * var(--u)) calc(1 * var(--u)) rgba(166,122,34,.4)}
 """
-UPD_HTML = """<div id="upd" hidden><div class="ubox"><div class="uic">\u2B06\uFE0F</div>
-  <h2>Naya version available</h2><p id="upfun"></p><p id="upv"></p>
-  <a id="upgo" class="ubtn" href="#">Update karein 🥳🎉</a><button id="uplater" class="ubtn ghost" type="button">Baad me 😢</button></div></div>
+UPD_HTML = ""
+UPD_BAR = """<div id="updbar" hidden><div class="umq"><span id="uptxt"></span></div><a id="upgo" href="#">Update \U0001F389</a></div>
 """
 UPD_JS = """
-/* ---- app update check ---- */
+/* ---- app update check: sirf ek line + Update button (popup nahi, app roke bina chalti hai) ---- */
 const APP_VER = %d, VER_URL = "%s";
-let updSkipped = false;
 const UPD_FUN = [
-  ["🚀", "Naya version aa gaya!", "Phone me nayi chamak lagwa lo ✨"],
-  ["🎁", "Surprise! Update taiyar hai", "Ek tap me naye features 😍"],
-  ["💪", "App ne gym join kar liya!", "Naya version aur fit hai, update karke dekho 😎"],
-  ["🥇", "Sone jaisa naya update!", "Chamak badhane ke liye abhi update karein ✨"],
-  ["🎉", "Party shuru! Naya version aaya", "Bas ek tap aur app ekdum fresh 🔥"]
+  "\U0001F680 Naya version aa gaya! Phone me nayi chamak lagwa lo \u2728",
+  "\U0001F381 Surprise! Update taiyar hai, ek tap me naye features \U0001F60D",
+  "\U0001F4AA App ne gym join kar liya! Naya version aur fit hai \U0001F60E",
+  "\U0001F947 Sone jaisa naya update! Chamak badhane ke liye update karein \u2728",
+  "\U0001F389 Party shuru! Naya version aaya, bas ek tap \U0001F973"
 ];
 let updVar = 0;
 function showUpdate(j){
-  const f = UPD_FUN[updVar++ %% UPD_FUN.length];
-  document.querySelector("#upd .uic").textContent = f[0];
-  document.querySelector("#upd h2").textContent = f[1];
-  document.getElementById("upfun").textContent = f[2];
-  if (document.getElementById("upd").hidden && typeof ssSfx === "function") ssSfx("back");
-  document.getElementById("upv").textContent = "Aapke paas v" + APP_VER_NAME + " hai. Naya v" + j.versionName + " taiyar hai.";
+  const t = document.getElementById("uptxt");
+  if (document.getElementById("updbar").hidden){
+    t.textContent = UPD_FUN[updVar++ %% UPD_FUN.length] + "   \u00B7   v" + j.versionName + " available";
+    document.getElementById("updbar").hidden = false;
+    const w = t.offsetWidth || 900; t.style.setProperty("--dur", Math.max(10, w / 70) + "s");
+  }
   document.getElementById("upgo").setAttribute("href", j.apk);
-  document.getElementById("upd").hidden = false;
 }
 function checkUpdate(){
-  if (updSkipped) return;
   const x = new XMLHttpRequest();
   x.open("GET", VER_URL + "?_=" + Date.now(), true); x.timeout = 8000;
   x.onload = function(){
@@ -230,17 +222,12 @@ function checkUpdate(){
   };
   x.send();
 }
-document.getElementById("uplater").addEventListener("click", function(){
-  updSkipped = true; document.getElementById("upd").hidden = true;
-});
 setTimeout(checkUpdate, 4000);
 setInterval(checkUpdate, 6 * 3600 * 1000);
 document.addEventListener("visibilitychange", function(){ if (!document.hidden) setTimeout(checkUpdate, 1500); });
 """ % (VC, VER_URL)
 VN = re.search(r'android:versionName="([^"]+)"', open(os.path.join(root, "AndroidManifest.xml")).read()).group(1)
-UPD_JS = UPD_JS.replace("APP_VER_NAME", '"%s"' % VN).replace('"v" + "' + VN + '" + "', 'v' + VN) if False else UPD_JS.replace('" + APP_VER_NAME + "', VN)
 src = once(src, "</style>", UPD_CSS + "</style>")
-src = once(src, '<footer id="foot">', UPD_HTML + '<footer id="foot">')
 src = once(src, "</script>\n</body>", UPD_JS + "</script>\n</body>")
 # footer me app version bhi
 src = once(src, '"Feed updated " + hhmmss(lastGood);', '"Feed updated " + hhmmss(lastGood) + "  \u00B7  v%s";' % VN)
@@ -453,7 +440,7 @@ TK_CSS = """
     font-size:calc(1.35 * var(--u));animation:tkmove var(--dur,22s) linear infinite}
   @keyframes tkmove{to{transform:translateX(-100%)}}
 """
-src = once(src, '<div id="banner" hidden></div>\n', '<div id="ticker"><span id="tk"></span></div>\n<div id="banner" hidden></div>\n')
+src = once(src, '<div id="banner" hidden></div>\n', '<div id="ticker"><span id="tk"></span></div>\n' + UPD_BAR + '<div id="banner" hidden></div>\n')
 src = once(src, "</style>", TK_CSS + "</style>")
 TK_JS = """
 /* ---- running line ---- */
