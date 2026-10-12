@@ -19,23 +19,26 @@ src = src[:a] + css + src[b:]
 # 2) tick() replace
 t0 = src.index("async function tick(){")
 t1 = src.index("/* Logo:")
-new_tick = '''const FEED_URL = "%s";
+new_tick = '''const FEED_DEFAULT = "%s";
+let FEED_URL = FEED_DEFAULT, fails = 0, directUntil = 0;
 let lastGood = 0, busy = false;
 function tick(){
   if (busy || document.hidden) return; busy = true;
   const x = new XMLHttpRequest();
-  x.open("GET", FEED_URL + "?_=" + Date.now(), true);
+  /* relay (config feedUrl) 5 baar lagatar fail ho to us waqt seedha original feed se le lo, taaki rates band na hon */
+  if (fails >= 5){ directUntil = Date.now() + 60000; fails = 0; }
+  x.open("GET", (Date.now() < directUntil ? FEED_DEFAULT : FEED_URL) + "?_=" + Date.now(), true);
   x.timeout = 5000;
   x.onload = function(){
     busy = false;
     if (x.status === 200 && x.responseText && x.responseText.length > 20){
-      lastGood = Date.now(); noteOK();
+      fails = 0; lastGood = Date.now(); noteOK();
       try{ render(parseFeed(x.responseText)); }catch(e){}
       document.getElementById("foot").textContent = "Feed updated " + hhmmss(lastGood);
-    }
+    } else fails++;
     updBadge();
   };
-  x.onerror = x.ontimeout = function(){ busy = false; updBadge(); };
+  x.onerror = x.ontimeout = function(){ busy = false; fails++; updBadge(); };
   x.send();
 }
 function updBadge(){
@@ -50,6 +53,9 @@ setInterval(updBadge, 1000);
 
 ''' % FEED
 src = src[:t0] + new_tick + src[t1:]
+# poll rate: app me 3 sec (laptop 1 sec), config se 2-6 sec
+src = once(src, "const REFRESH_MS = 1000;", "let REFRESH_MS = 3000;")
+src = once(src, "setInterval(tick, REFRESH_MS); tick();", "(function loop(){ tick(); setTimeout(loop, REFRESH_MS); })();")
 
 # 2b) portrait layout (phone)
 PORTRAIT = """
@@ -456,6 +462,8 @@ src = once(src, '  const bn = document.getElementById("banner");',
  '    document.getElementById("ticker").hidden = (c.ticker.show === false);\n'
  '    if ((s = cS(c.ticker.text, 300))) setTicker(s);\n'
  '  }\n'
+ '  FEED_URL = (typeof c.feedUrl === "string" && /^https:\\/\\/[^\\s"\'<>]{4,290}$/.test(c.feedUrl)) ? c.feedUrl : FEED_DEFAULT;\n'
+ '  if (typeof c.refreshMs === "number" && c.refreshMs >= 2000 && c.refreshMs <= 6000) REFRESH_MS = Math.round(c.refreshMs);\n'
  '  const bn = document.getElementById("banner");')
 
 # 2j) app background (recents / app switch) me popup, sound aur check band

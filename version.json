@@ -1,6 +1,6 @@
 {
-  "versionCode": 23,
-  "versionName": "2.8.2",
+  "versionCode": 25,
+  "versionName": "2.9",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "Test update"
+  "notes": "Relay support + 3s refresh"
 }
