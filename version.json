@@ -1,6 +1,6 @@
 {
-  "versionCode": 12,
-  "versionName": "2.1",
+  "versionCode": 13,
+  "versionName": "2.2",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "Funny popups, sound aur config.json se text/links badalna."
+  "notes": "Header ke neeche running line aayi."
 }

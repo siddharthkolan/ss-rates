@@ -425,6 +425,36 @@ src = once(src, "</style>", FUN_CSS + "</style>")
 src = once(src, '<footer id="foot">', FUN_HTML + '<footer id="foot">')
 src = once(src, "</script>\n</body>", FUN_JS + "</script>\n</body>")
 
+# 2i) running line (ticker) header ke neeche
+TK_TEXT = "Sometimes rates mai kuch difference aa sakta hai. Ek baar 100% accurate rates ke liye contact zarur kar lijiye. Dhanyavaad \U0001F64F"
+TK_CSS = """
+  #ticker{overflow:hidden;border-radius:calc(2 * var(--u));padding:calc(.8 * var(--u)) 0;
+    background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.85);
+    -webkit-backdrop-filter:blur(14px) saturate(1.5);backdrop-filter:blur(14px) saturate(1.5);
+    box-shadow:0 calc(.4 * var(--u)) calc(1.6 * var(--u)) rgba(120,95,40,.12)}
+  #ticker[hidden]{display:none}
+  #tk{display:inline-block;white-space:nowrap;padding-left:100%;font-weight:600;color:var(--gold);
+    font-size:calc(1.35 * var(--u));animation:tkmove var(--dur,22s) linear infinite}
+  @keyframes tkmove{to{transform:translateX(-100%)}}
+"""
+src = once(src, '<div id="banner" hidden></div>\n', '<div id="ticker"><span id="tk"></span></div>\n<div id="banner" hidden></div>\n')
+src = once(src, "</style>", TK_CSS + "</style>")
+TK_JS = """
+/* ---- running line ---- */
+function setTicker(text){
+  const t = document.getElementById("tk"); t.textContent = text;
+  const w = t.offsetWidth || 1200; t.style.setProperty("--dur", Math.max(10, w / 70) + "s");
+}
+setTicker(%s);
+""" % __import__("json").dumps(TK_TEXT)
+src = once(src, "</script>\n</body>", TK_JS + "</script>\n</body>")
+src = once(src, '  const bn = document.getElementById("banner");',
+ '  if (c.ticker && typeof c.ticker === "object"){\n'
+ '    document.getElementById("ticker").hidden = (c.ticker.show === false);\n'
+ '    if ((s = cS(c.ticker.text, 300))) setTicker(s);\n'
+ '  }\n'
+ '  const bn = document.getElementById("banner");')
+
 # 3) logo relative
 src = once(src, 'img.src = "/" + names[i]', 'img.src = names[i]')
 src = once(src, 'img.src = "/" + names[0]', 'img.src = names[0]')
