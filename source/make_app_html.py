@@ -195,8 +195,8 @@ UPD_CSS = """
   #upd .ubtn.ghost{background:rgba(255,255,255,.7);color:var(--ink);box-shadow:none;border:1px solid rgba(255,255,255,.9)}
 """
 UPD_HTML = """<div id="upd" hidden><div class="ubox"><div class="uic">\u2B06\uFE0F</div>
-  <h2>Naya version available</h2><p id="upfun"></p><p id="upv"></p><p id="upn"></p>
-  <a id="upgo" class="ubtn" href="#">Update karein</a><button id="uplater" class="ubtn ghost" type="button">Baad me</button></div></div>
+  <h2>Naya version available</h2><p id="upfun"></p><p id="upv"></p>
+  <a id="upgo" class="ubtn" href="#">Update karein 🥳🎉</a><button id="uplater" class="ubtn ghost" type="button">Baad me 😢</button></div></div>
 """
 UPD_JS = """
 /* ---- app update check ---- */
@@ -217,7 +217,6 @@ function showUpdate(j){
   document.getElementById("upfun").textContent = f[2];
   if (document.getElementById("upd").hidden && typeof ssSfx === "function") ssSfx("back");
   document.getElementById("upv").textContent = "Aapke paas v" + APP_VER_NAME + " hai. Naya v" + j.versionName + " taiyar hai.";
-  document.getElementById("upn").textContent = j.notes || "";
   document.getElementById("upgo").setAttribute("href", j.apk);
   document.getElementById("upd").hidden = false;
 }
