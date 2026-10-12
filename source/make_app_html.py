@@ -185,7 +185,8 @@ UPD_CSS = """
     border-radius:calc(2.4 * var(--u));background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.85);
     -webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);
     box-shadow:0 calc(1 * var(--u)) calc(4 * var(--u)) rgba(60,45,15,.3),inset 0 1px 0 rgba(255,255,255,.95)}
-  #upd .uic{font-size:calc(4 * var(--u));line-height:1}
+  #upd .uic{font-size:calc(6 * var(--u));line-height:1.1;display:inline-block;animation:bounce .9s infinite}
+  #upd #upfun{color:var(--ink);font-weight:600;font-size:calc(1.5 * var(--u))}
   #upd h2{font-size:calc(2 * var(--u));margin-top:calc(1 * var(--u));color:var(--gold)}
   #upd p{font-size:calc(1.35 * var(--u));color:var(--muted);margin-top:calc(.7 * var(--u));white-space:pre-line}
   #upd .ubtn{display:block;width:100%;margin-top:calc(1.4 * var(--u));padding:calc(1.2 * var(--u));border-radius:calc(3 * var(--u));
@@ -194,14 +195,27 @@ UPD_CSS = """
   #upd .ubtn.ghost{background:rgba(255,255,255,.7);color:var(--ink);box-shadow:none;border:1px solid rgba(255,255,255,.9)}
 """
 UPD_HTML = """<div id="upd" hidden><div class="ubox"><div class="uic">\u2B06\uFE0F</div>
-  <h2>Naya version available</h2><p id="upv"></p><p id="upn"></p>
+  <h2>Naya version available</h2><p id="upfun"></p><p id="upv"></p><p id="upn"></p>
   <a id="upgo" class="ubtn" href="#">Update karein</a><button id="uplater" class="ubtn ghost" type="button">Baad me</button></div></div>
 """
 UPD_JS = """
 /* ---- app update check ---- */
 const APP_VER = %d, VER_URL = "%s";
 let updSkipped = false;
+const UPD_FUN = [
+  ["🚀", "Naya version aa gaya!", "Phone me nayi chamak lagwa lo ✨"],
+  ["🎁", "Surprise! Update taiyar hai", "Ek tap me naye features 😍"],
+  ["💪", "App ne gym join kar liya!", "Naya version aur fit hai, update karke dekho 😎"],
+  ["🥇", "Sone jaisa naya update!", "Chamak badhane ke liye abhi update karein ✨"],
+  ["🎉", "Party shuru! Naya version aaya", "Bas ek tap aur app ekdum fresh 🔥"]
+];
+let updVar = 0;
 function showUpdate(j){
+  const f = UPD_FUN[updVar++ %% UPD_FUN.length];
+  document.querySelector("#upd .uic").textContent = f[0];
+  document.querySelector("#upd h2").textContent = f[1];
+  document.getElementById("upfun").textContent = f[2];
+  if (document.getElementById("upd").hidden && typeof ssSfx === "function") ssSfx("back");
   document.getElementById("upv").textContent = "Aapke paas v" + APP_VER_NAME + " hai. Naya v" + j.versionName + " taiyar hai.";
   document.getElementById("upn").textContent = j.notes || "";
   document.getElementById("upgo").setAttribute("href", j.apk);
