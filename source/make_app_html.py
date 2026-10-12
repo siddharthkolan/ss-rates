@@ -127,12 +127,15 @@ GLASS = """
   .dock svg{width:calc(2.7 * var(--u));height:calc(2.7 * var(--u))}
   body{padding-bottom:calc(14 * var(--u))}
 """
+CALL_URL = "tel:+919009087382"
 DOCK = """<nav class="dock" aria-label="Contact">
-  <a href="%s" aria-label="WhatsApp Channel"><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="#1faa59" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.6-4.6A8.5 8.5 0 1 1 8 19.6z"/><path d="M9 8.5c0 3.4 3.1 6.5 6.5 6.5l1.2-1.6-2.2-1.1-.9.8c-1-.4-1.9-1.3-2.3-2.3l.8-.9-1.1-2.2z" fill="#1faa59" stroke="none"/></svg></span>Channel</a>
-  <a href="%s" aria-label="Instagram"><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="#d6249f" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1" fill="#d6249f" stroke="none"/></svg></span>Instagram</a>
-  <a href="%s" aria-label="Location"><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="#d2403a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="#d2403a" stroke="none"/></svg></span>Location</a>
+  <a id="dk-channel" href="%s" aria-label="WhatsApp Channel"><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="#1faa59" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.6-4.6A8.5 8.5 0 1 1 8 19.6z"/><path d="M9 8.5c0 3.4 3.1 6.5 6.5 6.5l1.2-1.6-2.2-1.1-.9.8c-1-.4-1.9-1.3-2.3-2.3l.8-.9-1.1-2.2z" fill="#1faa59" stroke="none"/></svg></span><span class="lb">Channel</span></a>
+  <a id="dk-instagram" href="%s" aria-label="Instagram"><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="#d6249f" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1" fill="#d6249f" stroke="none"/></svg></span><span class="lb">Instagram</span></a>
+  <a id="dk-location" href="%s" aria-label="Location"><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="#d2403a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="#d2403a" stroke="none"/></svg></span><span class="lb">Location</span></a>
+  <a id="dk-call" href="%s" aria-label="Call" hidden><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="#2a6fdb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span><span class="lb">Call</span></a>
+  <a id="dk-chat" href="%s" aria-label="WhatsApp chat" hidden><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="#1faa59" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/></svg></span><span class="lb">Chat</span></a>
 </nav>
-""" % (WA_URL, IG_URL, MAP_URL)
+""" % (WA_URL, IG_URL, MAP_URL, CALL_URL, "https://wa.me/919009087382")
 # 2d) row: High/Low buy-sell ke neeche, bade fonts
 src = once(src, '        <div class="n3">High ${it.high} · Low ${it.low}</div>\n      </div>\n      <div class="px"><span class="lbl">BUY</span>',
     '      </div>\n      <div class="px pb"><span class="lbl">BUY</span>')
@@ -226,6 +229,201 @@ UPD_JS = UPD_JS.replace("APP_VER_NAME", '"%s"' % VN).replace('"v" + "' + VN + '"
 src = once(src, "</style>", UPD_CSS + "</style>")
 src = once(src, '<footer id="foot">', UPD_HTML + '<footer id="foot">')
 src = once(src, "</script>\n</body>", UPD_JS + "</script>\n</body>")
+
+# 2g) config.json (sirf data: text, links, rates, rang). Code kabhi download nahi hota.
+CFG_URL = "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/config.json"
+src = once(src, "<h1>SHREE SS JEWELLERS</h1>", '<h1 id="shopname">SHREE SS JEWELLERS</h1>')
+src = once(src, "<p>JAORA (M.P.)", '<p id="subtitle">JAORA (M.P.)')
+src = once(src, "</header>\n", '</header>\n<div id="banner" hidden></div>\n')
+src = once(src, '"No internet connection"', 'MSG.net.t')
+src = once(src, '"Please connect with internet."', 'MSG.net.p')
+src = once(src, '"Rates will be updated soon"', 'MSG.soon.t')
+src = once(src, '"Please try again after some time."', 'MSG.soon.p')
+src = once(src, ":root{--u:2.2vw}", ":root{--fs:1;--u:calc(2.2vw * var(--fs))}")
+CFG_CSS = """
+  .dock a[hidden]{display:none}
+  .dock .lb{display:block}
+  #banner{padding:calc(1 * var(--u)) calc(1.6 * var(--u));border-radius:calc(2 * var(--u));text-align:center;
+    font-weight:600;font-size:calc(1.5 * var(--u));color:var(--gold);white-space:pre-line;
+    background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.85);
+    -webkit-backdrop-filter:blur(14px) saturate(1.5);backdrop-filter:blur(14px) saturate(1.5);
+    box-shadow:0 calc(.5 * var(--u)) calc(2 * var(--u)) rgba(120,95,40,.14)}
+  #banner[hidden]{display:none}
+"""
+CFG_JS = """
+/* ---- config.json: sirf data (text, link, rates, rang). Har cheez check hoke lagti hai, code nahi chalta ---- */
+const CFG_URL = "%s";
+const MSG = {net:{t:"No internet connection", p:"Please connect with internet."},
+             soon:{t:"Rates will be updated soon", p:"Please try again after some time."}};
+function cS(v,n){ return (typeof v === "string") ? v.slice(0, n || 80) : null; }
+function cEsc(s){ return s.replace(/[&<>"'`]/g, function(c){ return "&#" + c.charCodeAt(0) + ";"; }); }
+function cN(v,lo,hi){ return (typeof v === "number" && isFinite(v) && v >= lo && v <= hi) ? v : null; }
+function cCol(v){ return (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v)) ? v : null; }
+function cUrl(v){ return (typeof v === "string" && v.length < 400 && /^(https:\\/\\/|tel:\\+?\\d{6,15}$)/.test(v)) ? v : null; }
+function cId(v){ return (typeof v === "string" && /^\\d{1,6}$/.test(v)) ? v : null; }
+function cIds(a){ if (!Array.isArray(a)) return null; const o = []; a.slice(0, 12).forEach(function(v){ const k = cId(v); if (k) o.push(k); }); return o; }
+function applyCfg(c){
+  if (!c || typeof c !== "object") return;
+  let s, n;
+  if ((s = cS(c.shopName, 40))) document.getElementById("shopname").textContent = s;
+  if ((s = cS(c.subtitle, 70))) document.getElementById("subtitle").textContent = s;
+  const bn = document.getElementById("banner");
+  if (c.banner && c.banner.show === true && (s = cS(c.banner.text, 200))){
+    bn.textContent = s; bn.style.color = cCol(c.banner.color) || ""; bn.hidden = false;
+  } else { bn.hidden = true; }
+  if (c.links && typeof c.links === "object"){
+    ["channel","instagram","location","call","chat"].forEach(function(k){
+      const l = c.links[k], a = document.getElementById("dk-" + k);
+      if (!l || !a) return;
+      if (typeof l.show === "boolean") a.hidden = !l.show;
+      if ((s = cS(l.label, 14))) a.querySelector(".lb").textContent = s;
+      if ((s = cUrl(l.url))) a.setAttribute("href", s);
+    });
+  }
+  let ids;
+  if ((ids = cIds(c.leftIds)) && ids.length) LEFT_IDS.splice(0, LEFT_IDS.length, ...ids);
+  if ((ids = cIds(c.hideIds))) HIDE_IDS.splice(0, HIDE_IDS.length, ...ids);
+  if (c.adjust && typeof c.adjust === "object"){
+    Object.keys(ADJUST).forEach(function(k){ delete ADJUST[k]; });
+    Object.keys(c.adjust).slice(0, 30).forEach(function(k){ const v = cN(c.adjust[k], -100000, 100000); if (cId(k) && v !== null) ADJUST[k] = v; });
+  }
+  if (Array.isArray(c.jewellery)){
+    const cards = [];
+    c.jewellery.slice(0, 4).forEach(function(cd){
+      if (!cd || !Array.isArray(cd.items)) return;
+      const t = cS(cd.title, 20), g = cN(cd.gst, 0, 28), items = [];
+      cd.items.slice(0, 4).forEach(function(it){
+        const src_ = cId(it && it.src), lb = cS(it && it.label, 14), f = cN(it && it.factor, 0.05, 2);
+        const u = it && (it.unit === "10g" || it.unit === "kg") ? it.unit : null;
+        if (src_ && lb && f !== null && u) items.push({src: src_, label: cEsc(lb), factor: f, unit: u});
+      });
+      if (t && g !== null && items.length) cards.push({title: cEsc(t), gst: g, items: items});
+    });
+    if (cards.length) JEWELLERY.splice(0, JEWELLERY.length, ...cards);
+  }
+  const th = c.theme;
+  if (th && typeof th === "object"){
+    const root = document.documentElement.style;
+    ["gold","ink","muted","up","down","bg"].forEach(function(k){ const v = cCol(th[k]); if (v) root.setProperty("--" + k, v); });
+    if ((n = cN(th.fontScale, 0.85, 1.25)) !== null) root.setProperty("--fs", String(n));
+  }
+  const m = c.messages;
+  if (m && typeof m === "object"){
+    ["net","soon"].forEach(function(k){ const e = m[k]; if (!e) return;
+      if ((s = cS(e.title, 40))) MSG[k].t = s; if ((s = cS(e.text, 80))) MSG[k].p = s; });
+  }
+}
+(function(){ try{ const c = localStorage.getItem("ssrates_cfg"); if (c) applyCfg(JSON.parse(c)); }catch(e){} })();
+function loadCfg(){
+  const x = new XMLHttpRequest();
+  x.open("GET", CFG_URL + "?_=" + Date.now(), true); x.timeout = 8000;
+  x.onload = function(){
+    try{ if (x.status !== 200) return; const c = JSON.parse(x.responseText);
+      if (typeof c !== "object" || c === null) return;
+      applyCfg(c); localStorage.setItem("ssrates_cfg", x.responseText); }catch(e){}
+  };
+  x.send();
+}
+setTimeout(loadCfg, 1500);
+setInterval(loadCfg, 10 * 60 * 1000);
+document.addEventListener("visibilitychange", function(){ if (!document.hidden) setTimeout(loadCfg, 1000); });
+""" % CFG_URL
+src = once(src, "</style>", CFG_CSS + "</style>")
+src = once(src, "</script>\n</body>", CFG_JS + "</script>\n</body>")
+
+# 2h) funny popup + sound + "rates wapas aa gaye" toast
+FUN_CSS = """
+  @keyframes wob{0%,100%{transform:rotate(-8deg) translateY(0)}50%{transform:rotate(8deg) translateY(-6%)}}
+  @keyframes bounce{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-22%) scale(1.08)}60%{transform:translateY(0) scale(.96)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8%)}40%{transform:translateX(8%)}60%{transform:translateX(-5%)}80%{transform:translateX(5%)}}
+  @keyframes popin{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+  @keyframes drop{0%{transform:translate(-50%,-160%);opacity:0}15%{transform:translate(-50%,0);opacity:1}85%{transform:translate(-50%,0);opacity:1}100%{transform:translate(-50%,-160%);opacity:0}}
+  #notice .box{animation:popin .35s ease-out;white-space:pre-line}
+  #notice .ic{display:inline-block;font-size:calc(7 * var(--u));line-height:1.1}
+  #notice.net .ic{animation:shake .7s infinite}
+  #notice.soon .ic{animation:wob 1.2s ease-in-out infinite}
+  #notice h2{font-size:calc(2.1 * var(--u))}
+  #notice p{font-size:calc(1.5 * var(--u))}
+  #notice .snd{margin-top:calc(1.4 * var(--u));border:0;border-radius:calc(2 * var(--u));padding:calc(.7 * var(--u)) calc(1.4 * var(--u));
+    background:rgba(0,0,0,.06);color:var(--muted);font:inherit;font-size:calc(1.2 * var(--u));cursor:pointer}
+  #back{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 2 * var(--u));z-index:60;transform:translate(-50%,-160%);
+    padding:calc(1.1 * var(--u)) calc(2 * var(--u));border-radius:calc(3 * var(--u));font-weight:700;font-size:calc(1.6 * var(--u));
+    color:var(--up);background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.9);white-space:nowrap;
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 calc(.8 * var(--u)) calc(3 * var(--u)) rgba(60,45,15,.25)}
+  #back.show{animation:drop 5s ease-in-out forwards}
+  #back .em{display:inline-block;animation:bounce .8s infinite}
+"""
+FUN_HTML = '<div id="back" role="status"></div>\n'
+FUN_JS = """
+/* ---- funny popup, sound, aur "rates wapas" toast ---- */
+let ssMuted = false, ssDown = false, ssAc = null, ssVar = 0;
+try{ ssMuted = localStorage.getItem("ss_mute") === "1"; }catch(e){}
+function ssCtx(){ try{ ssAc = ssAc || new (window.AudioContext || window.webkitAudioContext)();
+  if (ssAc.state === "suspended") ssAc.resume(); }catch(e){} return ssAc; }
+document.addEventListener("touchstart", function(){ ssCtx(); }, {once:true});
+document.addEventListener("click", function(){ ssCtx(); }, {once:true});
+function ssTone(f1, f2, t0, d, type, vol){
+  const a = ssCtx(); if (!a) return;
+  const o = a.createOscillator(), g = a.createGain(), t = a.currentTime + t0;
+  o.type = type; o.frequency.setValueAtTime(f1, t); if (f2 !== f1) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + d + 0.05);
+}
+function ssSfx(kind){
+  if (ssMuted) return;
+  if (kind === "net"){            /* sad trombone: wah wah wah waaah */
+    ssTone(392, 370, 0, .32, "sawtooth", .09); ssTone(349, 330, .38, .32, "sawtooth", .09);
+    ssTone(311, 293, .76, .32, "sawtooth", .09); ssTone(262, 120, 1.14, .8, "sawtooth", .1);
+  } else if (kind === "soon"){    /* boop boop boing */
+    ssTone(660, 660, 0, .09, "square", .05); ssTone(880, 880, .14, .09, "square", .05);
+    ssTone(660, 660, .28, .09, "square", .05); ssTone(300, 800, .45, .3, "sine", .12);
+  } else {                        /* tada: C E G C */
+    ssTone(523, 523, 0, .13, "triangle", .13); ssTone(659, 659, .12, .13, "triangle", .13);
+    ssTone(784, 784, .24, .13, "triangle", .13); ssTone(1047, 1047, .36, .5, "triangle", .14);
+    ssTone(1568, 1568, .5, .35, "sine", .05);
+  }
+}
+const FUN = {
+  net: {em: ["\\uD83D\\uDCE1", "\\uD83D\\uDE35\\u200D\\uD83D\\uDCAB", "\\uD83C\\uDFC3\\uD83D\\uDCA8"], v: [
+    ["Arre! Internet bhaag gaya \\uD83C\\uDFC3\\uD83D\\uDCA8", "Net ko pakad ke wapas laao, tab tak rates chhutti par hain \\uD83D\\uDE34"],
+    ["Net ne chhutti le li \\uD83C\\uDFD6\\uFE0F", "WiFi ya data on karo, phir milte hain \\uD83D\\uDE0E"],
+    ["Hello? Koi hai? \\uD83D\\uDC40", "Internet ghar chhod ke chala gaya lagta hai \\uD83E\\uDD72"]]},
+  soon: {em: ["\\u23F3", "\\uD83D\\uDC22", "\\u2615"], v: [
+    ["Rates chai peene gaye hain \\u2615", "Bas aate hi honge, thoda sabr rakho \\uD83D\\uDE4F"],
+    ["Rates kachhua ki speed se aa rahe hain \\uD83D\\uDC22", "Ek-do minute baad dobara dekhna \\uD83D\\uDE09"],
+    ["Sone ko bhi aaram chahiye \\uD83D\\uDE34\\u2728", "Rates jaldi hi fresh hokar aayenge \\uD83D\\uDCAB"]]}
+};
+showNotice = function(kind){
+  const n = document.getElementById("notice");
+  if (!n.hidden && n.className === kind) return;
+  ssDown = true;
+  const f = FUN[kind], i = ssVar++ % f.v.length, m = MSG[kind];
+  const ic = document.getElementById("nic"); ic.textContent = f.em[i];
+  document.getElementById("nh").textContent = f.v[i][0];
+  document.getElementById("np").textContent = f.v[i][1] + "\\n\\n" + m.t + "\\n" + m.p;
+  let b = document.getElementById("snd");
+  if (!b){ b = document.createElement("button"); b.id = "snd"; b.type = "button"; b.className = "snd";
+    b.addEventListener("click", function(){ ssMuted = !ssMuted; try{ localStorage.setItem("ss_mute", ssMuted ? "1" : "0"); }catch(e){}
+      b.textContent = ssMuted ? "\\uD83D\\uDD07 Sound off" : "\\uD83D\\uDD0A Sound on"; if (!ssMuted) ssSfx(document.getElementById("notice").className); });
+    document.querySelector("#notice .box").appendChild(b); }
+  b.textContent = ssMuted ? "\\uD83D\\uDD07 Sound off" : "\\uD83D\\uDD0A Sound on";
+  n.className = kind; n.hidden = false;
+  ssSfx(kind);
+};
+noteOK = function(){
+  okAt = Date.now(); hideNotice();
+  if (ssDown){
+    ssDown = false;
+    const t = document.getElementById("back");
+    t.innerHTML = '<span class="em">\\uD83C\\uDF89</span> Rates wapas aa gaye! Ab ekdum fresh \\uD83D\\uDD25';
+    t.classList.remove("show"); void t.offsetWidth; t.classList.add("show");
+    ssSfx("back");
+  }
+};
+""" 
+src = once(src, "</style>", FUN_CSS + "</style>")
+src = once(src, '<footer id="foot">', FUN_HTML + '<footer id="foot">')
+src = once(src, "</script>\n</body>", FUN_JS + "</script>\n</body>")
 
 # 3) logo relative
 src = once(src, 'img.src = "/" + names[i]', 'img.src = names[i]')

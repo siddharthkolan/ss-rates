@@ -52,6 +52,10 @@
     invoke-virtual {v1, v2}, Landroid/webkit/WebSettings;->setAllowFileAccessFromFileURLs(Z)V
     invoke-virtual {v1, v2}, Landroid/webkit/WebSettings;->setAllowUniversalAccessFromFileURLs(Z)V
 
+    # awaaz (popup ke sound) bina touch ke bhi chal sake: setMediaPlaybackRequiresUserGesture(false)
+    const/4 v3, 0x0
+    invoke-virtual {v1, v3}, Landroid/webkit/WebSettings;->setMediaPlaybackRequiresUserGesture(Z)V
+
     # LOAD_NO_CACHE = 2 (rates kabhi purane cache se na aayein)
     const/4 v2, 0x2
     invoke-virtual {v1, v2}, Landroid/webkit/WebSettings;->setCacheMode(I)V

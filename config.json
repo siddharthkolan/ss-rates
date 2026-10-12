@@ -1,0 +1,30 @@
+{
+  "shopName": "SHREE SS JEWELLERS",
+  "subtitle": "JAORA (M.P.) · LIVE GOLD & SILVER RATES",
+  "banner": { "show": false, "text": "", "color": "#a67a22" },
+  "links": {
+    "channel":   { "show": true,  "label": "Channel",   "url": "https://whatsapp.com/channel/0029VbBrPE50bIdlNTKXtr1S" },
+    "instagram": { "show": true,  "label": "Instagram", "url": "https://www.instagram.com/ss_jewellers_jaora/" },
+    "location":  { "show": true,  "label": "Location",  "url": "https://www.google.com/maps/search/?api=1&query=Shree+SS+Jewellers+Azad+Chowk+Jaora" },
+    "call":      { "show": false, "label": "Call",      "url": "tel:+919009087382" },
+    "chat":      { "show": false, "label": "Chat",      "url": "https://wa.me/919009087382" }
+  },
+  "leftIds": ["7291", "7386", "7627", "7363", "7634"],
+  "hideIds": [],
+  "adjust": {},
+  "jewellery": [
+    { "title": "GST", "gst": 3, "items": [
+      { "src": "7291", "label": "22 KT",  "factor": 0.92,   "unit": "10g" },
+      { "src": "7291", "label": "18 KT",  "factor": 0.7538, "unit": "10g" },
+      { "src": "7386", "label": "SILVER", "factor": 0.9,    "unit": "kg" } ] },
+    { "title": "H+", "gst": 0, "items": [
+      { "src": "7627", "label": "22 KT",  "factor": 0.92,   "unit": "10g" },
+      { "src": "7627", "label": "18 KT",  "factor": 0.7538, "unit": "10g" },
+      { "src": "7363", "label": "SILVER", "factor": 0.9,    "unit": "kg" } ] }
+  ],
+  "theme": { "fontScale": 1 },
+  "messages": {
+    "net":  { "title": "No internet connection",     "text": "Please connect with internet." },
+    "soon": { "title": "Rates will be updated soon", "text": "Please try again after some time." }
+  }
+}
