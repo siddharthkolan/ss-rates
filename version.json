@@ -1,6 +1,6 @@
 {
-  "versionCode": 19,
-  "versionName": "2.7.1",
+  "versionCode": 21,
+  "versionName": "2.8",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "No internet ki awaaz halki aur meethi."
+  "notes": "Phone notification"
 }

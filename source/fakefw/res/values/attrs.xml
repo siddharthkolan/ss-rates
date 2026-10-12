@@ -6,6 +6,7 @@
     <attr name="label" format="reference|string" />
     <attr name="icon" format="reference" />
     <attr name="name" format="string" />
+    <attr name="permission" format="string" />
     <attr name="exported" format="boolean" />
     <attr name="screenOrientation">
         <enum name="unspecified" value="-1" />

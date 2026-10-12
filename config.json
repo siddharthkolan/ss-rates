@@ -109,5 +109,11 @@
   "ticker": {
     "show": true,
     "text": "Sone-chandi ke bhaav pal-pal badalte hain, isliye ek baar dukaan par pooch kar hi sauda pakka karein ✨ Aapka bharosa hi hamari kamai hai, dhanyavaad 🙏"
+  },
+  "notification": {
+    "show": false,
+    "id": "",
+    "title": "Shree SS Jewellers",
+    "text": ""
   }
 }

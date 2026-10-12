@@ -24,3 +24,22 @@ for name, px in sizes.items():
     canvas.putalpha(mask)
     canvas.save(os.path.join(out_dir, "ic_launcher.png"), optimize=True)
     print("icon", name, px)
+
+# --- notification status-bar icon: mota safed heart silhouette (status bar me patli line dikhti nahi) ---
+import math
+stat = {"mdpi": 24, "hdpi": 36, "xhdpi": 48, "xxhdpi": 72, "xxxhdpi": 96}
+for name, px in stat.items():
+    big = 8; N = px * big
+    pts = []
+    for k in range(720):
+        t = 2 * math.pi * k / 720
+        x = 16 * math.sin(t) ** 3
+        y = 13 * math.cos(t) - 5 * math.cos(2*t) - 2 * math.cos(3*t) - math.cos(4*t)
+        pts.append((N / 2 + x * N * 0.027 * 1.0 * 1.55 / 1.0 * 0.62, N * 0.47 - y * N * 0.027 * 1.55 * 0.62))
+    m = Image.new("L", (N, N), 0); ImageDraw.Draw(m).polygon(pts, fill=255)
+    m = m.resize((px, px), Image.LANCZOS)
+    sil = Image.new("RGBA", (px, px), (255, 255, 255, 0)); sil.putalpha(m)
+    sil = Image.merge("RGBA", (Image.new("L",(px,px),255),)*3 + (m,))
+    d = os.path.join(root, "res", f"drawable-{name}"); os.makedirs(d, exist_ok=True)
+    sil.save(os.path.join(d, "ic_stat.png"), optimize=True)
+    print("stat", name, px)

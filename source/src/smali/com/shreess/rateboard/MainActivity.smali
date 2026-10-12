@@ -69,6 +69,13 @@
     const-string v1, "file:///android_asset/index.html"
     invoke-virtual {v0, v1}, Landroid/webkit/WebView;->loadUrl(Ljava/lang/String;)V
 
+    # background notification check schedule (galti par bhi app crash nahi hoga)
+    :try_start_s
+    invoke-static {p0}, Lcom/shreess/rateboard/Sched;->go(Landroid/app/Activity;)V
+    :try_end_s
+    .catch Ljava/lang/Throwable; {:try_start_s .. :try_end_s} :catch_s
+
+    :catch_s
     return-void
 .end method
 
