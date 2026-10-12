@@ -103,7 +103,7 @@ if os.path.isdir(REPO):
     vj = {"versionCode": code, "versionName": name, "apk": APK_URL, "notes": a.notes or json.load(open(f"{REPO}/version.json")).get("notes", "")}
     json.dump(vj, open(f"{REPO}/version.json", "w"), indent=2, ensure_ascii=False)
     src = os.path.join(REPO, "source"); shutil.rmtree(src, ignore_errors=True); os.makedirs(src)
-    for f in ("AndroidManifest.xml", "make_icons.py", "make_app_html.py", "build_apk.py", "release.py"):
+    for f in ("AndroidManifest.xml", "make_icons.py", "make_app_html.py", "build_apk.py", "release.py", "setup_tools.py"):
         shutil.copy(os.path.join(ROOT, f), src)
     for d in ("src", "res", "fakefw", "tools"):
         shutil.copytree(os.path.join(ROOT, d), os.path.join(src, d))
