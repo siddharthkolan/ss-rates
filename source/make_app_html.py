@@ -242,6 +242,9 @@ UPD_JS = UPD_JS.replace("APP_VER_NAME", '"%s"' % VN).replace('"v" + "' + VN + '"
 src = once(src, "</style>", UPD_CSS + "</style>")
 src = once(src, '<footer id="foot">', UPD_HTML + '<footer id="foot">')
 src = once(src, "</script>\n</body>", UPD_JS + "</script>\n</body>")
+# footer me app version bhi
+src = once(src, '"Feed updated " + hhmmss(lastGood);', '"Feed updated " + hhmmss(lastGood) + "  \u00B7  v%s";' % VN)
+src = once(src, "</script>\n</body>", 'document.getElementById("foot").textContent = "v%s";\n' % VN + "</script>\n</body>")
 
 # 2g) config.json (sirf data: text, links, rates, rang). Code kabhi download nahi hota.
 CFG_URL = "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/config.json"
