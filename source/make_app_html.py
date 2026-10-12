@@ -22,7 +22,7 @@ t1 = src.index("/* Logo:")
 new_tick = '''const FEED_URL = "%s";
 let lastGood = 0, busy = false;
 function tick(){
-  if (busy) return; busy = true;
+  if (busy || document.hidden) return; busy = true;
   const x = new XMLHttpRequest();
   x.open("GET", FEED_URL + "?_=" + Date.now(), true);
   x.timeout = 5000;
@@ -384,7 +384,7 @@ function ssTone(f1, f2, t0, d, type, vol){
   o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + d + 0.05);
 }
 function ssSfx(kind){
-  if (ssMuted) return;
+  if (ssMuted || document.hidden) return;
   if (kind === "net"){            /* sad trombone: wah wah wah waaah */
     ssTone(392, 370, 0, .32, "sawtooth", .09); ssTone(349, 330, .38, .32, "sawtooth", .09);
     ssTone(311, 293, .76, .32, "sawtooth", .09); ssTone(262, 120, 1.14, .8, "sawtooth", .1);
@@ -409,7 +409,7 @@ const FUN = {
 };
 showNotice = function(kind){
   const n = document.getElementById("notice");
-  if (!n.hidden && n.className === kind) return;
+  if (document.hidden || (!n.hidden && n.className === kind)) return;
   ssDown = true;
   const f = FUN[kind], i = ssVar++ % f.v.length, m = MSG[kind];
   const ic = document.getElementById("nic"); ic.textContent = f.em[i];
@@ -468,6 +468,28 @@ src = once(src, '  const bn = document.getElementById("banner");',
  '    if ((s = cS(c.ticker.text, 300))) setTicker(s);\n'
  '  }\n'
  '  const bn = document.getElementById("banner");')
+
+# 2j) app background (recents / app switch) me popup, sound aur check band
+BG_JS = """
+/* ---- background guard: app recents me ho to na popup, na sound, na polling ---- */
+const ssNoteFail = noteFail;
+noteFail = function(){ if (document.hidden) return; ssNoteFail(); };
+document.addEventListener("visibilitychange", function(){
+  if (document.hidden){
+    ssDown = false; hideNotice();
+    try{ if (ssAc) ssAc.suspend(); }catch(e){}
+  } else {
+    okAt = Date.now();          /* wapas aane par 6 sec ka grace, tab tak koi popup nahi */
+    hideNotice(); ssDown = false;
+    try{ if (ssAc) ssAc.resume(); }catch(e){}
+    setTimeout(tick, 200);
+  }
+});
+"""
+src = once(src, "</script>\n</body>", BG_JS + "</script>\n</body>")
+# kacchi silver (7634) panel hide
+src = once(src, 'const LEFT_IDS   = ["7291", "7386", "7627", "7363", "7634"];', 'const LEFT_IDS   = ["7291", "7386", "7627", "7363"];')
+src = once(src, "const HIDE_IDS   = [];", 'const HIDE_IDS   = ["7634"];')
 
 # 3) logo relative
 src = once(src, 'img.src = "/" + names[i]', 'img.src = names[i]')

@@ -42,6 +42,9 @@ print(f"Release v{name} (code {code})")
 
 # 1) UI (version manifest se baked hota hai, isliye manifest bump ke BAAD)
 run([sys.executable, os.path.join(ROOT, "make_app_html.py")])
+# 1b) dex: smali se hamesha dobara (MainActivity/ExtClient badle ho sakte hain)
+J = f"{SCR}/tools/apktool/bin/apktool_2.4.1.jar"
+run(["java", "-cp", f"{J}:{BUILD}/tools", "SmaliRun", os.path.join(ROOT, "src", "smali"), f"{BUILD}/classes.dex", "19"])
 # 2) resources + manifest
 os.path.exists(f"{BUILD}/res.zip") and os.remove(f"{BUILD}/res.zip")
 run([AAPT, "compile", "--dir", os.path.join(ROOT, "res"), "-o", f"{BUILD}/res.zip"])
@@ -87,6 +90,8 @@ for sec in (raw[:start], raw[cdo:eo], bytes(s3)):
         c = sec[i:i + (1 << 20)]; ds.append(hashlib.sha256(b"\xa5" + struct.pack("<I", len(c)) + c).digest())
 if hashlib.sha256(b"\x5a" + struct.pack("<I", len(ds)) + b"".join(ds)).digest() != want: fail("v2 digest mismatch")
 dex = z.read("classes.dex")
+for need in (b"onPause", b"onResume", b"setMediaPlaybackRequiresUserGesture", b"ExtClient"):
+    if need not in dex: fail(f"dex me {need.decode()} nahi mila")
 import zlib
 if zlib.adler32(dex[12:]) & 0xffffffff != struct.unpack("<I", dex[8:12])[0] or hashlib.sha1(dex[32:]).digest() != dex[12:32]: fail("dex checksum")
 print("ALL CHECKS PASSED: version match, signature, cert, alignment, dex")

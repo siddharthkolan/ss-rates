@@ -92,3 +92,25 @@
     :cond_done
     return-void
 .end method
+
+
+# App recents me jaye to WebView ko pause, wapas aaye to resume
+.method protected onPause()V
+    .locals 1
+    invoke-super {p0}, Landroid/app/Activity;->onPause()V
+    iget-object v0, p0, Lcom/shreess/rateboard/MainActivity;->web:Landroid/webkit/WebView;
+    if-eqz v0, :cond_p
+    invoke-virtual {v0}, Landroid/webkit/WebView;->onPause()V
+    :cond_p
+    return-void
+.end method
+
+.method protected onResume()V
+    .locals 1
+    invoke-super {p0}, Landroid/app/Activity;->onResume()V
+    iget-object v0, p0, Lcom/shreess/rateboard/MainActivity;->web:Landroid/webkit/WebView;
+    if-eqz v0, :cond_r
+    invoke-virtual {v0}, Landroid/webkit/WebView;->onResume()V
+    :cond_r
+    return-void
+.end method
