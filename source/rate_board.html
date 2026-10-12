@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shree SS Jewellers - Live Rates</title>
+<style>
+  :root{
+    --bg:#f6f2e9; --card:#ffffff; --line:#ece5d5; --ink:#2a2418; --muted:#8c816d;
+    --gold:#a67a22; --gold-soft:#f8f1de; --up:#128a55; --down:#d2403a; --amber:#c98412;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI",Roboto,"Noto Sans Devanagari",Arial,sans-serif;overflow:hidden}
+  body{display:flex;flex-direction:column;padding:1.5vw 2vw;gap:1.2vw}
+
+  /* header */
+  header{display:flex;justify-content:space-between;align-items:center}
+  .brand{display:flex;align-items:center;gap:1.2vw}
+  #logo{height:5vw;width:auto;display:block;mix-blend-mode:multiply}
+  .brand h1{font-size:2.4vw;letter-spacing:.14em;color:var(--gold);font-weight:700}
+  .brand p{font-size:1vw;color:var(--muted);margin-top:.2vw;letter-spacing:.12em}
+  .clock{display:flex;align-items:center;gap:1.3vw}
+  .clock .t{font-size:2.2vw;font-weight:600;font-variant-numeric:tabular-nums;text-align:right;line-height:1}
+  .clock .d{font-size:.95vw;color:var(--muted);text-align:right;margin-top:.2vw}
+  .badge{font-size:.95vw;padding:.3vw .9vw;border-radius:2vw;font-weight:600;letter-spacing:.08em;
+    background:#fff;border:1px solid currentColor;white-space:nowrap}
+  .badge.live{color:var(--up)} .badge.stale{color:var(--amber)} .badge.off{color:var(--down)}
+
+  /* two columns */
+  .main{display:grid;grid-template-columns:1.3fr 1fr;gap:1.4vw;flex:1;min-height:0}
+  .left{display:grid;grid-template-rows:repeat(5,1fr);gap:.8vw;min-height:0}
+  .right{display:grid;grid-template-rows:1fr 1fr;gap:.9vw;min-height:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:1.1vw;
+    box-shadow:0 .2vw 1vw rgba(120,95,40,.06)}
+
+  /* left rows */
+  .row{display:grid;grid-template-columns:1.25fr 1fr 1fr;align-items:center;gap:.8vw;
+    padding:0 1.4vw;min-height:0}
+  .n1{font-size:1.3vw;font-weight:600;letter-spacing:.02em}
+  .n2{display:flex;align-items:center;gap:.6vw;margin-top:.3vw}
+  .n3{font-size:.9vw;color:var(--muted);margin-top:.3vw;font-variant-numeric:tabular-nums}
+  .unit{font-size:.85vw;color:var(--gold);background:var(--gold-soft);padding:.12vw .6vw;border-radius:1vw;white-space:nowrap}
+  .st{font-size:.85vw;color:var(--muted)}
+  .px{display:flex;flex-direction:column;align-items:flex-end;justify-content:center}
+  .lbl{font-size:.9vw;color:var(--muted);letter-spacing:.16em}
+  .big{font-size:3.2vw;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.05;transition:color .3s}
+
+  /* right: calculated 22 / 18 KT */
+  .gcard{padding:1vw 1.3vw;display:flex;flex-direction:column;min-height:0}
+  .gtop{display:flex;flex-direction:column;gap:.15vw;
+    padding-bottom:.6vw;border-bottom:1px solid var(--line)}
+  .gtop h3{font-size:1.25vw;font-weight:600;letter-spacing:.04em}
+  .gtop .src{font-size:.85vw;color:var(--muted)}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:.7vw;flex:1;margin-top:.8vw;min-height:0}
+  .tile{background:var(--gold-soft);border-radius:.9vw;padding:.5vw .7vw;display:flex;
+    flex-direction:column;justify-content:center;align-items:flex-end;min-height:0;min-width:0}
+  .tile .kr{align-self:stretch;display:flex;justify-content:space-between;align-items:baseline;gap:.3vw}
+  .tile .k{font-size:1vw;font-weight:700;color:var(--gold);letter-spacing:.08em;white-space:nowrap}
+  .tile .ut{font-size:.75vw;color:var(--muted);white-space:nowrap}
+  .tile .v{font-size:2.7vw;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1;transition:color .3s;white-space:nowrap}
+  .tile .g{font-size:.9vw;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  /* bottom strip: other rates */
+  .strip{display:flex;gap:.8vw}
+  .si{flex:1;background:var(--card);border:1px solid var(--line);border-radius:.9vw;padding:.55vw .9vw;min-width:0}
+  .sn{font-size:.85vw;color:var(--muted);letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sn .u{margin-left:.4vw;font-size:.75vw}
+  .sv{font-size:1.35vw;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .sv i{color:var(--muted);font-style:normal;margin:0 .35vw;font-weight:400}
+
+  .up{color:var(--up)!important} .down{color:var(--down)!important}
+  .dim{opacity:.5}
+  footer{font-size:.85vw;color:var(--muted);text-align:center}
+
+  /* connection / no-rates notice */
+  #notice{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(42,36,24,.45);z-index:50;padding:4vw}
+  #notice[hidden]{display:none}
+  #notice .box{background:#fff;border-radius:1.4vw;padding:2.6vw 3.4vw;max-width:46vw;text-align:center;
+    border:1px solid var(--line);box-shadow:0 1vw 4vw rgba(42,36,24,.25)}
+  #notice .ic{font-size:3.4vw;line-height:1}
+  #notice h2{font-size:2vw;margin-top:1vw;color:var(--ink)}
+  #notice p{font-size:1.4vw;margin-top:.8vw;color:var(--muted)}
+  #notice.net h2{color:var(--down)} #notice.soon h2{color:var(--amber)}
+  @media (orientation: portrait){
+    #notice .box{max-width:none;width:100%;padding:6vw 5vw;border-radius:4vw}
+    #notice .ic{font-size:11vw} #notice h2{font-size:4.6vw;margin-top:3vw} #notice p{font-size:3.6vw;margin-top:2vw}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <img id="logo" alt="" hidden>
+    <div class="bt">
+      <h1>SHREE SS JEWELLERS</h1>
+      <p>JAORA (M.P.) &nbsp;·&nbsp; LIVE GOLD &amp; SILVER RATES</p>
+    </div>
+  </div>
+  <div class="clock">
+    <div>
+      <div class="t" id="time">--:--:--</div>
+      <div class="d" id="date"></div>
+    </div>
+    <span class="badge off" id="badge">CONNECTING</span>
+  </div>
+</header>
+
+<section class="main">
+  <div class="left" id="left"></div>
+  <div class="right" id="right"></div>
+</section>
+
+<section class="strip" id="strip"></section>
+<div id="notice" hidden><div class="box"><div class="ic" id="nic"></div><h2 id="nh"></h2><p id="np"></p></div></div>
+<footer id="foot">F = full screen</footer>
+
+<script>
+/* ================= SETTINGS (yahin se badlo) ================= */
+const LEFT_IDS   = ["7291", "7386", "7627", "7363", "7634"]; // left side ke 5 rates, isi order me
+const HIDE_IDS   = [];            // neeche wali patti se jo rates hatani hon, unke id likho
+const ADJUST     = {};            // dukaan ka markup: {"7627": 200} => us id ke buy/sell me jod/ghata dega
+
+/* Jewellery rate (right side): har card ek GST-group hai, uske andar tiles.
+   Formula: jewellery rate = (feed ka rate, GST hata ke) x factor
+   src   = feed ka id jisse calculate karna hai
+   unit  = "10g" (gold, Rs per 10 g) ya "kg" (silver, Rs per kg)            */
+const JEWELLERY = [
+  { title: "GST", gst: 3, items: [        // gst: 3 = rate me se 3% GST pehle hata do
+      { src: "7291", label: "22 KT",      factor: 0.92,         unit: "10g" },
+      { src: "7291", label: "18 KT",      factor: 0.75 / 0.995, unit: "10g" },   // = 0.7538
+      { src: "7386", label: "SILVER 90%", factor: 0.90,         unit: "kg"  } ] },
+  { title: "H+",       gst: 0, items: [        // 0 = GST nahi hatana
+      { src: "7627", label: "22 KT",      factor: 0.92,         unit: "10g" },
+      { src: "7627", label: "18 KT",      factor: 0.75 / 0.995, unit: "10g" },
+      { src: "7363", label: "SILVER 90%", factor: 0.90,         unit: "kg"  } ] }
+];
+const GST_METHOD = "divide";      // "divide": rate / 1.03 (GST sahi tareeke se alag)   "minus": rate x 0.97 (seedha 3% ghatao)
+const CALC_SIDE = "sell";         // "sell" ya "buy": feed ki kaunsi side se calculate karni hai
+const ROUND_TO  = 1;              // rupee me round (1 = nearest rupee, 10 = nearest 10)
+
+const STALE_SECS = 120;           // itni der rate na badle to "last tick" dim dikhega
+const REFRESH_MS = 1000;
+/* unit: gold = Rs/10g, silver = Rs/kg, comex = $/oz, inr = Rs per $ */
+function unitFor(id, name){
+  const n = name.toLowerCase();
+  if (n.includes("inr")) return "₹/$";
+  if (n.includes("comex")) return "$/oz";
+  if (n.includes("gold")) return "₹/10g";
+  if (n.includes("silver")) return "₹/kg";
+  return "";
+}
+/* ============================================================ */
+
+const prev = {};      // id -> {buy, sell, changedAt, bc, sc}
+const prevCalc = {};  // "id|karat" -> {val, changedAt, cls}
+
+function parseFeed(text){
+  const out = [];
+  text.split(/\r?\n/).forEach(line=>{
+    const p = line.split("\t");
+    if (p.length < 7 || !p[1].trim()) return;
+    out.push({ id:p[1].trim(), name:p[2].trim(), buy:p[3].trim(), sell:p[4].trim(),
+               high:p[5].trim(), low:p[6].trim() });
+  });
+  return out;
+}
+function adj(v, d){
+  if (!d) return v;
+  const n = parseFloat(v); if (isNaN(n)) return v;
+  const dec = (v.split(".")[1]||"").length;
+  return (n + d).toFixed(dec);
+}
+function cmpClass(cur, old){
+  const a = parseFloat(cur), b = parseFloat(old);
+  if (isNaN(a)||isNaN(b)||a===b) return "";
+  return a > b ? "up" : "down";
+}
+function hhmmss(ts){ return new Date(ts).toLocaleTimeString("en-GB"); }
+function karatRate(base, factor){
+  return Math.round(base * factor / ROUND_TO) * ROUND_TO;
+}
+function removeGst(v, pct){
+  if (!pct) return v;
+  return GST_METHOD === "minus" ? v * (1 - pct/100) : v / (1 + pct/100);
+}
+
+function render(items){
+  const now = Date.now();
+  items.forEach(it=>{
+    const d = ADJUST[it.id] || 0;
+    it.buy = adj(it.buy,d); it.sell = adj(it.sell,d); it.high = adj(it.high,d); it.low = adj(it.low,d);
+    const p = prev[it.id];
+    if (!p){ prev[it.id] = {buy:it.buy, sell:it.sell, changedAt:now, bc:"", sc:""}; }
+    else if (p.buy !== it.buy || p.sell !== it.sell){
+      p.bc = cmpClass(it.buy,p.buy); p.sc = cmpClass(it.sell,p.sell);
+      p.buy = it.buy; p.sell = it.sell; p.changedAt = now;
+    }
+    it.p = prev[it.id];
+    it.unit = unitFor(it.id, it.name);
+  });
+  Object.values(prev).forEach(p=>{ if (now - p.changedAt > 1500){ p.bc = ""; p.sc = ""; } });
+
+  /* LEFT: 5 rates */
+  document.getElementById("left").innerHTML = LEFT_IDS.map(id=>{
+    const it = items.find(x=>x.id===id); if (!it) return "";
+    const stale = (now - it.p.changedAt) > STALE_SECS*1000;
+    return `<div class="card row">
+      <div>
+        <div class="n1">${it.name}</div>
+        <div class="n2"><span class="unit">${it.unit}</span>
+          <span class="st ${stale?'dim':''}">${stale ? 'last tick '+hhmmss(it.p.changedAt) : '● live'}</span></div>
+        <div class="n3">High ${it.high} · Low ${it.low}</div>
+      </div>
+      <div class="px"><span class="lbl">BUY</span><span class="big ${it.p.bc}">${it.buy}</span></div>
+      <div class="px"><span class="lbl">SELL</span><span class="big ${it.p.sc}">${it.sell}</span></div>
+    </div>`;
+  }).join("");
+
+  /* RIGHT: jewellery rates (22 KT, 18 KT gold + silver 90%) */
+  document.getElementById("right").innerHTML = JEWELLERY.map(card=>{
+    const tiles = card.items.map(k=>{
+      const it = items.find(x=>x.id===k.src); if (!it) return "";
+      const base = removeGst(parseFloat(it[CALC_SIDE]), card.gst);
+      const key = card.title + "|" + k.label;
+      let val = isNaN(base) ? null : karatRate(base, k.factor);
+      let c = prevCalc[key];
+      if (!c){ c = prevCalc[key] = {val, changedAt: now, cls: ""}; }
+      else if (c.val !== val){ c.cls = (val!==null && c.val!==null) ? cmpClass(val, c.val) : ""; c.val = val; c.changedAt = now; }
+      if (now - c.changedAt > 1500) c.cls = "";
+      const perG = val === null ? "--" : (k.unit === "kg" ? (val/1000).toFixed(1) : Math.round(val/10));
+      return `<div class="tile">
+        <div class="kr"><span class="k">${k.label}</span><span class="ut">${k.unit === "kg" ? "per kg" : "per 10 g"}</span></div>
+        <span class="v ${c.cls}">${val === null ? "--" : val}</span>
+        <span class="g">₹ ${perG} / gram</span>
+      </div>`;
+    }).join("");
+    return `<div class="card gcard">
+      <div class="gtop"><h3>JEWELLERY RATE · ${card.title}</h3>
+        <span class="src">${CALC_SIDE} rate${card.gst ? ' − ' + card.gst + '% GST' : ''}</span></div>
+      <div class="tiles">${tiles}</div>
+    </div>`;
+  }).join("");
+
+  /* BOTTOM STRIP: baaki rates */
+  document.getElementById("strip").innerHTML = items
+    .filter(it=>!LEFT_IDS.includes(it.id) && !HIDE_IDS.includes(it.id))
+    .map(it=>{
+      const stale = (now - it.p.changedAt) > STALE_SECS*1000;
+      return `<div class="si ${stale?'dim':''}">
+        <div class="sn">${it.name}<span class="u">${it.unit}</span></div>
+        <div class="sv"><span class="${it.p.bc}">${it.buy}</span><i>/</i><span class="${it.p.sc}">${it.sell}</span></div>
+      </div>`;
+    }).join("");
+}
+
+function setBadge(kind, text){
+  const b = document.getElementById("badge");
+  b.className = "badge " + kind; b.textContent = text;
+}
+
+/* ---- notice: internet nahi / rates update ho rahe hain ---- */
+let okAt = Date.now(), probeAt = 0, probeRes = true, probing = false;
+function showNotice(kind){
+  const n = document.getElementById("notice");
+  if (kind === "net"){
+    document.getElementById("nic").textContent = "\uD83D\uDCF6";
+    document.getElementById("nh").textContent = "No internet connection";
+    document.getElementById("np").textContent = "Please connect with internet.";
+  } else {
+    document.getElementById("nic").textContent = "\u23F3";
+    document.getElementById("nh").textContent = "Rates will be updated soon";
+    document.getElementById("np").textContent = "Please try again after some time.";
+  }
+  n.className = kind; n.hidden = false;
+}
+function hideNotice(){ document.getElementById("notice").hidden = true; }
+function probeNet(cb){
+  if (!navigator.onLine) return cb(false);
+  if (Date.now() - probeAt < 5000 || probing) return cb(probeRes);
+  probing = true;
+  const c = new AbortController(); const t = setTimeout(()=>c.abort(), 4000);
+  fetch("https://www.gstatic.com/generate_204", {mode:"no-cors", cache:"no-store", signal:c.signal})
+    .then(()=>{ probeRes = true; }).catch(()=>{ probeRes = false; })
+    .finally(()=>{ clearTimeout(t); probing = false; probeAt = Date.now(); cb(probeRes); });
+}
+function noteOK(){ okAt = Date.now(); hideNotice(); }
+function noteFail(){
+  if (Date.now() - okAt < 6000) return;
+  probeNet(ok => showNotice(ok ? "soon" : "net"));
+}
+
+async function tick(){
+  try{
+    const r = await fetch("/feed", {cache:"no-store"});
+    const j = await r.json();
+    if (j.ok && j.text){
+      render(parseFeed(j.text));
+      const age = (j.server_time - j.fetched_at);
+      setBadge(age < 10 ? "live" : "stale", age < 10 ? "● LIVE" : "DATA "+Math.round(age)+"s OLD");
+      if (age < 30) noteOK(); else noteFail();
+      document.getElementById("foot").textContent =
+        "Feed updated " + hhmmss(j.fetched_at*1000) + "   ·   F = full screen";
+    } else {
+      setBadge("off", "FEED OFFLINE"); noteFail();
+    }
+  }catch(e){
+    setBadge("off", "SERVER OFFLINE"); noteFail();
+  }
+}
+
+/* Logo: folder me logo.png (ya logo.jpg / logo.jpeg / logo.webp / logo.svg) rakho, apne aap dikhega.
+   Na ho to kuch nahi dikhta. */
+(function loadLogo(){
+  const names = ["logo.png","logo.jpg","logo.jpeg","logo.webp","logo.svg"];
+  const img = document.getElementById("logo");
+  let i = 0;
+  img.onload = ()=>{ img.hidden = false; };
+  img.onerror = ()=>{ i++; if (i < names.length) img.src = "/" + names[i]; else img.remove(); };
+  img.src = "/" + names[0];
+})();
+
+function clock(){
+  const d = new Date();
+  document.getElementById("time").textContent = d.toLocaleTimeString("en-GB");
+  document.getElementById("date").textContent =
+    d.toLocaleDateString("en-GB",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+}
+setInterval(clock, 1000); clock();
+setInterval(tick, REFRESH_MS); tick();
+
+document.addEventListener("keydown", e=>{
+  if (e.key.toLowerCase()==="f"){
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  }
+});
+</script>
+</body>
+</html>

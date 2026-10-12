@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android framework ka chhota "nakli" attribute-table. Sirf isliye ki aapt2 manifest ke
+     android:* attributes ko sahi (asli) resource IDs de sake. IDs public.xml me hain. -->
+<resources>
+    <attr name="theme" format="reference" />
+    <attr name="label" format="reference|string" />
+    <attr name="icon" format="reference" />
+    <attr name="name" format="string" />
+    <attr name="exported" format="boolean" />
+    <attr name="screenOrientation">
+        <enum name="unspecified" value="-1" />
+        <enum name="landscape" value="0" />
+        <enum name="portrait" value="1" />
+        <enum name="user" value="2" />
+        <enum name="behind" value="3" />
+        <enum name="sensor" value="4" />
+        <enum name="nosensor" value="5" />
+        <enum name="sensorLandscape" value="6" />
+        <enum name="sensorPortrait" value="7" />
+        <enum name="reverseLandscape" value="8" />
+        <enum name="reversePortrait" value="9" />
+        <enum name="fullSensor" value="10" />
+        <enum name="userLandscape" value="11" />
+        <enum name="userPortrait" value="12" />
+        <enum name="fullUser" value="13" />
+        <enum name="locked" value="14" />
+    </attr>
+    <attr name="configChanges">
+        <flag name="mcc" value="0x0001" />
+        <flag name="mnc" value="0x0002" />
+        <flag name="locale" value="0x0004" />
+        <flag name="touchscreen" value="0x0008" />
+        <flag name="keyboard" value="0x0010" />
+        <flag name="keyboardHidden" value="0x0020" />
+        <flag name="navigation" value="0x0040" />
+        <flag name="orientation" value="0x0080" />
+        <flag name="screenLayout" value="0x0100" />
+        <flag name="uiMode" value="0x0200" />
+        <flag name="screenSize" value="0x0400" />
+        <flag name="smallestScreenSize" value="0x0800" />
+        <flag name="density" value="0x1000" />
+        <flag name="layoutDirection" value="0x2000" />
+        <flag name="colorMode" value="0x4000" />
+        <flag name="fontScale" value="0x40000000" />
+    </attr>
+    <attr name="versionCode" format="integer" />
+    <attr name="versionName" format="string" />
+    <attr name="minSdkVersion" format="integer|string" />
+    <attr name="targetSdkVersion" format="integer|string" />
+    <attr name="maxSdkVersion" format="integer" />
+    <attr name="hardwareAccelerated" format="boolean" />
+    <attr name="allowBackup" format="boolean" />
+    <attr name="required" format="boolean" />
+    <attr name="compileSdkVersion" format="integer" />
+    <attr name="compileSdkVersionCodename" format="string" />
+</resources>
