@@ -111,9 +111,9 @@
     "text": "Sone-chandi ke bhaav pal-pal badalte hain, isliye ek baar dukaan par pooch kar hi sauda pakka karein ✨ Aapka bharosa hi hamari kamai hai, dhanyavaad 🙏"
   },
   "notification": {
-    "show": false,
-    "id": "",
-    "title": "Shree SS Jewellers",
-    "text": ""
+    "show": true,
+    "id": "diwali-offer-1",
+    "title": "Diwali Offer 🪔✨",
+    "text": "Shree SS Jewellers me Diwali ke khaas offers shuru! Sone-chandi ke gehne dekhne aur offer ki jaankari ke liye dukaan par padharein 🙏 Shubh Deepawali! 🎆"
   }
 }
