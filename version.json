@@ -1,6 +1,6 @@
 {
-  "versionCode": 18,
-  "versionName": "2.7",
+  "versionCode": 19,
+  "versionName": "2.7.1",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "Neeche Feed updated ke saath app version."
+  "notes": "No internet ki awaaz halki aur meethi."
 }

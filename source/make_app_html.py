@@ -387,9 +387,9 @@ function ssTone(f1, f2, t0, d, type, vol){
 }
 function ssSfx(kind){
   if (ssMuted || document.hidden) return;
-  if (kind === "net"){            /* sad trombone: wah wah wah waaah */
-    ssTone(392, 370, 0, .32, "sawtooth", .09); ssTone(349, 330, .38, .32, "sawtooth", .09);
-    ssTone(311, 293, .76, .32, "sawtooth", .09); ssTone(262, 120, 1.14, .8, "sawtooth", .1);
+  if (kind === "net"){            /* halki, meethi ding-dong (public jagah par bhi theek) */
+    ssTone(659, 659, 0, .55, "sine", .06); ssTone(1318, 1318, 0, .35, "sine", .015);
+    ssTone(523, 523, .3, .8, "sine", .06); ssTone(1046, 1046, .3, .45, "sine", .015);
   } else if (kind === "soon"){    /* boop boop boing */
     ssTone(660, 660, 0, .09, "square", .05); ssTone(880, 880, .14, .09, "square", .05);
     ssTone(660, 660, .28, .09, "square", .05); ssTone(300, 800, .45, .3, "sine", .12);
