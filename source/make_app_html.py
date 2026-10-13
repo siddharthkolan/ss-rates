@@ -3,7 +3,9 @@
 import re, sys, os
 root = os.path.dirname(os.path.abspath(__file__))
 src = open(os.path.join(root, "..", "rate_board.html"), encoding="utf-8").read()
-FEED = sys.argv[1] if len(sys.argv) > 1 else "https://bcast.bhavyalaxmibullion.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/bhavyalaxmi"
+DESKTOP = "--desktop" in sys.argv
+args = [a for a in sys.argv[1:] if not a.startswith("--")]
+FEED = args[0] if args else "https://bcast.bhavyalaxmibullion.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/bhavyalaxmi"
 
 def once(s, old, new):
     assert s.count(old) == 1, (old[:40], s.count(old))
@@ -16,46 +18,48 @@ css = re.sub(r"(-?\d*\.?\d+)vw", lambda m: f"calc({m.group(1)} * var(--u))", css
 css = once(css, "  :root{\n", "  :root{\n    --u:min(1vw,1.7778vh);\n")
 src = src[:a] + css + src[b:]
 
-# 2) tick() replace
-t0 = src.index("async function tick(){")
-t1 = src.index("/* Logo:")
-new_tick = '''const FEED_DEFAULT = "%s";
-let FEED_URL = FEED_DEFAULT, fails = 0, directUntil = 0;
-let lastGood = 0, busy = false;
-function tick(){
-  if (busy || document.hidden) return; busy = true;
-  const x = new XMLHttpRequest();
-  /* relay (config feedUrl) 5 baar lagatar fail ho to us waqt seedha original feed se le lo, taaki rates band na hon */
-  if (fails >= 5){ directUntil = Date.now() + 60000; fails = 0; }
-  x.open("GET", (Date.now() < directUntil ? FEED_DEFAULT : FEED_URL) + "?_=" + Date.now(), true);
-  x.timeout = 5000;
-  x.onload = function(){
-    busy = false;
-    if (x.status === 200 && x.responseText && x.responseText.length > 20){
-      fails = 0; lastGood = Date.now(); noteOK();
-      try{ render(parseFeed(x.responseText)); }catch(e){}
-      document.getElementById("foot").textContent = "Feed updated " + hhmmss(lastGood);
-    } else fails++;
-    updBadge();
-  };
-  x.onerror = x.ontimeout = function(){ busy = false; fails++; updBadge(); };
-  x.send();
-}
-function updBadge(){
-  if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); return; }
-  const age = (Date.now() - lastGood) / 1000;
-  if (age >= 8) noteFail();
-  if (age < 10) setBadge("live", "\\u25CF LIVE");
-  else if (age < 60) setBadge("stale", "DATA " + Math.round(age) + "s OLD");
-  else setBadge("off", "FEED OFFLINE");
-}
-setInterval(updBadge, 1000);
+# 2) tick() replace (desktop: laptop ka apna /feed wala tick rehta hai)
+if not DESKTOP:
+    t0 = src.index("async function tick(){")
+    t1 = src.index("/* Logo:")
+    new_tick = '''const FEED_DEFAULT = "%s";
+    let FEED_URL = FEED_DEFAULT, fails = 0, directUntil = 0;
+    let lastGood = 0, busy = false;
+    function tick(){
+      if (busy || document.hidden) return; busy = true;
+      const x = new XMLHttpRequest();
+      /* relay (config feedUrl) 5 baar lagatar fail ho to us waqt seedha original feed se le lo, taaki rates band na hon */
+      if (fails >= 5){ directUntil = Date.now() + 60000; fails = 0; }
+      x.open("GET", (Date.now() < directUntil ? FEED_DEFAULT : FEED_URL) + "?_=" + Date.now(), true);
+      x.timeout = 5000;
+      x.onload = function(){
+        busy = false;
+        if (x.status === 200 && x.responseText && x.responseText.length > 20){
+          fails = 0; lastGood = Date.now(); noteOK();
+          try{ render(parseFeed(x.responseText)); }catch(e){}
+          document.getElementById("foot").textContent = "Feed updated " + hhmmss(lastGood);
+        } else fails++;
+        updBadge();
+      };
+      x.onerror = x.ontimeout = function(){ busy = false; fails++; updBadge(); };
+      x.send();
+    }
+    function updBadge(){
+      if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); return; }
+      const age = (Date.now() - lastGood) / 1000;
+      if (age >= 8) noteFail();
+      if (age < 10) setBadge("live", "\\u25CF LIVE");
+      else if (age < 60) setBadge("stale", "DATA " + Math.round(age) + "s OLD");
+      else setBadge("off", "FEED OFFLINE");
+    }
+    setInterval(updBadge, 1000);
 
-''' % FEED
-src = src[:t0] + new_tick + src[t1:]
-# poll rate: app me 3 sec (laptop 1 sec), config se 2-6 sec
-src = once(src, "const REFRESH_MS = 1000;", "let REFRESH_MS = 3000;")
-src = once(src, "setInterval(tick, REFRESH_MS); tick();", "(function loop(){ tick(); setTimeout(loop, REFRESH_MS); })();")
+    ''' % FEED
+    src = src[:t0] + new_tick + src[t1:]
+    # poll rate: app me 3 sec (laptop 1 sec), config se 2-6 sec
+    src = once(src, "const REFRESH_MS = 1000;", "let REFRESH_MS = 3000;")
+    src = once(src, "setInterval(tick, REFRESH_MS); tick();", "(function loop(){ tick(); setTimeout(loop, REFRESH_MS); })();")
+
 
 # 2b) portrait layout (phone)
 PORTRAIT = """
@@ -149,6 +153,9 @@ src = once(src, '<span class="big ${it.p.bc}">${it.buy}</span></div>', '<span cl
 src = once(src, '<div class="px"><span class="lbl">SELL</span><span class="big ${it.p.sc}">${it.sell}</span></div>\n    </div>`;',
     '<div class="px ps"><span class="lbl">SELL</span><span class="big ${it.p.sc}">${it.sell}</span><span class="hs">H - ${it.high}</span></div>\n      \n    </div>`;')
 src = once(src, '      <div>\n        <div class="n1">', '      <div class="nm">\n        <div class="n1">')
+# app: sirf SELL dikhao (BUY aur L line hata do); laptop me dono rehte hain
+if not DESKTOP:
+    src = once(src, '      <div class="px pb"><span class="lbl">BUY</span><span class="big ${it.p.bc}">${it.buy}</span><span class="hs">L - ${it.low}</span></div>\n', '')
 BIG = """
   .hs{font-size:calc(1.15 * var(--u));font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:calc(.15 * var(--u))}
   @media (orientation: portrait){
@@ -195,9 +202,22 @@ HDR = """
   @keyframes nameIn{from{opacity:0;transform:translateY(calc(-1 * var(--u))) scale(.96)}to{opacity:1;transform:none}}
   @keyframes logoBeat{0%,100%{transform:scale(1)}45%{transform:scale(1.07)}}
 """
+SELLONLY = """
+  /* app: sirf SELL, bade fonts */
+  @media (orientation: portrait){
+    .row{grid-template-columns:1fr auto;gap:calc(1.2 * var(--u));padding:calc(1.5 * var(--u)) calc(1.8 * var(--u))}
+    .n1{font-size:calc(2.25 * var(--u))}
+    .unit,.st{font-size:calc(1.3 * var(--u))}
+    .lbl{font-size:calc(1.3 * var(--u));letter-spacing:.14em}
+    .big{font-size:calc(4.7 * var(--u))}
+    .hs{font-size:calc(1.75 * var(--u))}
+  }
+"""
 GLASS = GLASS + BIG + HDR
+if not DESKTOP: GLASS += SELLONLY
+if DESKTOP: GLASS = GLASS.replace('  body{padding-bottom:calc(14 * var(--u))}\n', '')
 src = once(src, "</style>", GLASS + "</style>")
-src = once(src, '<footer id="foot">', DOCK + '<footer id="foot">')
+if not DESKTOP: src = once(src, '<footer id="foot">', DOCK + '<footer id="foot">')
 
 # 2e) tile label: "SILVER 90%" -> "SILVER"
 assert src.count('label: "SILVER 90%"') == 2
@@ -259,11 +279,12 @@ setInterval(checkUpdate, 5 * 60 * 1000);
 document.addEventListener("visibilitychange", function(){ if (!document.hidden) setTimeout(checkUpdate, 1500); });
 """ % (VC, VER_URL)
 VN = re.search(r'android:versionName="([^"]+)"', open(os.path.join(root, "AndroidManifest.xml")).read()).group(1)
-src = once(src, "</style>", UPD_CSS + "</style>")
-src = once(src, "</script>\n</body>", UPD_JS + "</script>\n</body>")
+if not DESKTOP: src = once(src, "</style>", UPD_CSS + "</style>")
+if not DESKTOP: src = once(src, "</script>\n</body>", UPD_JS + "</script>\n</body>")
 # footer me app version bhi
-src = once(src, '"Feed updated " + hhmmss(lastGood);', '"Feed updated " + hhmmss(lastGood) + "  \u00B7  v%s" + (window.ssLatest || "");' % VN)
-src = once(src, "</script>\n</body>", 'document.getElementById("foot").textContent = "v%s";\n' % VN + "</script>\n</body>")
+if not DESKTOP:
+    src = once(src, '"Feed updated " + hhmmss(lastGood);', '"Feed updated " + hhmmss(lastGood) + "  \u00B7  v%s" + (window.ssLatest || "");' % VN)
+    src = once(src, "</script>\n</body>", 'document.getElementById("foot").textContent = "v%s";\n' % VN + "</script>\n</body>")
 
 # 2g) config.json (sirf data: text, links, rates, rang). Code kabhi download nahi hota.
 CFG_URL = "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/config.json"
@@ -381,11 +402,11 @@ FUN_CSS = """
   #notice p{font-size:calc(1.5 * var(--u))}
   #notice .snd{margin-top:calc(1.4 * var(--u));border:0;border-radius:calc(2 * var(--u));padding:calc(.7 * var(--u)) calc(1.4 * var(--u));
     background:rgba(0,0,0,.06);color:var(--muted);font:inherit;font-size:calc(1.2 * var(--u));cursor:pointer}
-  #back{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 2 * var(--u));z-index:60;transform:translate(-50%,-160%);
+  #back{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 2 * var(--u));z-index:60;transform:translate(-50%,-260%);visibility:hidden;
     padding:calc(1.1 * var(--u)) calc(2 * var(--u));border-radius:calc(3 * var(--u));font-weight:700;font-size:calc(1.6 * var(--u));
     color:var(--up);background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.9);white-space:nowrap;
     -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 calc(.8 * var(--u)) calc(3 * var(--u)) rgba(60,45,15,.25)}
-  #back.show{animation:drop 5s ease-in-out forwards}
+  #back.show{visibility:visible;animation:drop 5s ease-in-out forwards}
   #back .em{display:inline-block;animation:bounce .8s infinite}
 """
 FUN_HTML = '<div id="back" role="status"></div>\n'
@@ -472,7 +493,7 @@ TK_CSS = """
     font-size:calc(1.35 * var(--u));animation:tkmove var(--dur,22s) linear infinite}
   @keyframes tkmove{to{transform:translateX(-100%)}}
 """
-src = once(src, '<div id="banner" hidden></div>\n', '<div id="ticker"><span id="tk"></span></div>\n' + UPD_BAR + '<div id="banner" hidden></div>\n')
+src = once(src, '<div id="banner" hidden></div>\n', '<div id="ticker"><span id="tk"></span></div>\n' + ('' if DESKTOP else UPD_BAR) + '<div id="banner" hidden></div>\n')
 src = once(src, "</style>", TK_CSS + "</style>")
 TK_JS = """
 /* ---- running line ---- */
@@ -497,8 +518,10 @@ src = once(src, '  const bn = document.getElementById("banner");',
  '    document.getElementById("ticker").hidden = (c.ticker.show === false);\n'
  '    if ((s = cS(c.ticker.text, 300))) setTicker(s);\n'
  '  }\n'
+ '  if (typeof FEED_DEFAULT !== "undefined"){\n'
  '  FEED_URL = (typeof c.feedUrl === "string" && /^https:\\/\\/[^\\s"\'<>]{4,290}$/.test(c.feedUrl)) ? c.feedUrl : FEED_DEFAULT;\n'
  '  if (typeof c.refreshMs === "number" && c.refreshMs >= 2000 && c.refreshMs <= 6000) REFRESH_MS = Math.round(c.refreshMs);\n'
+ '  }\n'
  '  const bn = document.getElementById("banner");')
 
 # 2j) app background (recents / app switch) me popup, sound aur check band
@@ -523,11 +546,25 @@ src = once(src, "</script>\n</body>", BG_JS + "</script>\n</body>")
 src = once(src, 'const LEFT_IDS   = ["7291", "7386", "7627", "7363", "7634"];', 'const LEFT_IDS   = ["7291", "7386", "7627", "7363"];')
 src = once(src, "const HIDE_IDS   = [];", 'const HIDE_IDS   = ["7634"];')
 
+DESK_CSS = """
+  /* ===== desktop / TV (landscape) ===== */
+  @media (orientation: landscape){
+    html,body{height:100%}
+    .left{grid-template-rows:none;grid-auto-rows:1fr}
+    #ticker{margin:0}
+    .brand h1{font-size:calc(3 * var(--u));letter-spacing:.08em}
+  }
+"""
 # 3) logo relative
-src = once(src, 'img.src = "/" + names[i]', 'img.src = names[i]')
-src = once(src, 'img.src = "/" + names[0]', 'img.src = names[0]')
+if not DESKTOP:
+    src = once(src, 'img.src = "/" + names[i]', 'img.src = names[i]')
+    src = once(src, 'img.src = "/" + names[0]', 'img.src = names[0]')
 # 4) footer
 src = src.replace("   ·   F = full screen", "").replace("F = full screen", "")
 os.makedirs(os.path.join(root, "assets"), exist_ok=True)
+if DESKTOP:
+    src = once(src, "</style>", DESK_CSS + "</style>")
+    open(os.path.join(root, "..", "rate_board_desktop.html"), "w", encoding="utf-8").write(src)
+    print("desktop page ready"); sys.exit(0)
 open(os.path.join(root, "assets", "index.html"), "w", encoding="utf-8").write(src)
 print("ok", len(src))
