@@ -172,7 +172,25 @@ BIG = """
     .dock a{font-size:calc(1.25 * var(--u))}
   }
 """
-GLASS = GLASS + BIG
+HDR = """
+  /* shop naam: bada, poori width bharta hai, sone jaisi chamak (shimmer) + logo halka dhadakta hai */
+  .brand{align-items:center}
+  .brand .bt{flex:1;min-width:0}
+  @media (orientation: portrait){
+    .brand h1{font-size:calc(2.75 * var(--u));letter-spacing:.07em;line-height:1.1;white-space:nowrap}
+    .brand p{font-size:calc(1.15 * var(--u));letter-spacing:.05em;margin-top:calc(.35 * var(--u))}
+    #logo{height:calc(6.4 * var(--u))}
+  }
+  #shopname{background:linear-gradient(100deg,var(--gold) 0%,var(--gold) 38%,#f2b705 50%,var(--gold) 62%,var(--gold) 100%);
+    background-size:260% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+    animation:nameShine 3s ease-in-out infinite, nameIn .9s cubic-bezier(.2,.9,.3,1.2) both}
+  #logo{animation:logoBeat 2.8s ease-in-out infinite;transform-origin:50% 55%;filter:drop-shadow(0 0 calc(.5 * var(--u)) rgba(199,154,59,.35))}
+  #subtitle{animation:nameIn 1.1s .25s ease both}
+  @keyframes nameShine{0%{background-position:130% 0}70%,100%{background-position:-30% 0}}
+  @keyframes nameIn{from{opacity:0;transform:translateY(calc(-1 * var(--u))) scale(.96)}to{opacity:1;transform:none}}
+  @keyframes logoBeat{0%,100%{transform:scale(1)}45%{transform:scale(1.07)}}
+"""
+GLASS = GLASS + BIG + HDR
 src = once(src, "</style>", GLASS + "</style>")
 src = once(src, '<footer id="foot">', DOCK + '<footer id="foot">')
 
@@ -274,7 +292,7 @@ function cIds(a){ if (!Array.isArray(a)) return null; const o = []; a.slice(0, 1
 function applyCfg(c){
   if (!c || typeof c !== "object") return;
   let s, n;
-  if ((s = cS(c.shopName, 40))) document.getElementById("shopname").textContent = s;
+  if ((s = cS(c.shopName, 40))) { document.getElementById("shopname").textContent = s; fitName(); }
   if ((s = cS(c.subtitle, 70))) document.getElementById("subtitle").textContent = s;
   const bn = document.getElementById("banner");
   if (c.banner && c.banner.show === true && (s = cS(c.banner.text, 200))){
@@ -450,6 +468,15 @@ src = once(src, '<div id="banner" hidden></div>\n', '<div id="ticker"><span id="
 src = once(src, "</style>", TK_CSS + "</style>")
 TK_JS = """
 /* ---- running line ---- */
+function fitName(){
+  const h = document.getElementById("shopname"); if (!h) return;
+  h.style.fontSize = "";
+  const box = h.parentElement; let fs = parseFloat(getComputedStyle(h).fontSize), n = 0;
+  while (h.scrollWidth > box.clientWidth + 1 && fs > 10 && n++ < 40){ fs -= 1; h.style.fontSize = fs + "px"; }
+}
+window.addEventListener("resize", fitName);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitName);
+setTimeout(fitName, 300);
 function setTicker(text){
   const t = document.getElementById("tk"); t.textContent = text;
   const w = t.offsetWidth || 1200; t.style.setProperty("--dur", Math.max(10, w / 70) + "s");
