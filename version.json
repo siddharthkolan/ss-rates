@@ -1,6 +1,6 @@
 {
-  "versionCode": 26,
-  "versionName": "2.9.1",
+  "versionCode": 27,
+  "versionName": "2.9.2",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "Header animation + bada naam"
+  "notes": "Update check fix"
 }

@@ -238,23 +238,26 @@ function showUpdate(j){
   document.getElementById("upgo").setAttribute("href", j.apk);
 }
 function checkUpdate(){
+  if (document.hidden) return;
   const x = new XMLHttpRequest();
   x.open("GET", VER_URL + "?_=" + Date.now(), true); x.timeout = 8000;
   x.onload = function(){
     try{ if (x.status !== 200) return; const j = JSON.parse(x.responseText);
+      window.ssLatest = "  \\u00B7  latest v" + String(j.versionName).slice(0, 12);
       if (j.versionCode > APP_VER && j.apk) showUpdate(j); }catch(e){}
   };
   x.send();
 }
-setTimeout(checkUpdate, 4000);
-setInterval(checkUpdate, 6 * 3600 * 1000);
+/* pehli check fail ho (net abhi ready nahi) to 6 ghante rukna nahi: 4s, 20s, 60s par aur phir har 5 minute */
+setTimeout(checkUpdate, 4000); setTimeout(checkUpdate, 20000); setTimeout(checkUpdate, 60000);
+setInterval(checkUpdate, 5 * 60 * 1000);
 document.addEventListener("visibilitychange", function(){ if (!document.hidden) setTimeout(checkUpdate, 1500); });
 """ % (VC, VER_URL)
 VN = re.search(r'android:versionName="([^"]+)"', open(os.path.join(root, "AndroidManifest.xml")).read()).group(1)
 src = once(src, "</style>", UPD_CSS + "</style>")
 src = once(src, "</script>\n</body>", UPD_JS + "</script>\n</body>")
 # footer me app version bhi
-src = once(src, '"Feed updated " + hhmmss(lastGood);', '"Feed updated " + hhmmss(lastGood) + "  \u00B7  v%s";' % VN)
+src = once(src, '"Feed updated " + hhmmss(lastGood);', '"Feed updated " + hhmmss(lastGood) + "  \u00B7  v%s" + (window.ssLatest || "");' % VN)
 src = once(src, "</script>\n</body>", 'document.getElementById("foot").textContent = "v%s";\n' % VN + "</script>\n</body>")
 
 # 2g) config.json (sirf data: text, links, rates, rang). Code kabhi download nahi hota.
