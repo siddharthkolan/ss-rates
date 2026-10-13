@@ -177,13 +177,18 @@ HDR = """
   .brand{align-items:center}
   .brand .bt{flex:1;min-width:0}
   @media (orientation: portrait){
-    .brand h1{font-size:calc(2.75 * var(--u));letter-spacing:.07em;line-height:1.1;white-space:nowrap}
+    .brand h1{font-size:calc(2.6 * var(--u));letter-spacing:.06em;line-height:1.1;white-space:nowrap}
     .brand p{font-size:calc(1.15 * var(--u));letter-spacing:.05em;margin-top:calc(.35 * var(--u))}
     #logo{height:calc(6.4 * var(--u))}
   }
-  #shopname{background:linear-gradient(100deg,var(--gold) 0%,var(--gold) 38%,#f2b705 50%,var(--gold) 62%,var(--gold) 100%);
-    background-size:260% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
-    animation:nameShine 3s ease-in-out infinite, nameIn .9s cubic-bezier(.2,.9,.3,1.2) both}
+  #shopname{position:relative;padding-right:calc(.9 * var(--u));color:transparent;-webkit-text-fill-color:transparent;
+    animation:nameIn .9s cubic-bezier(.2,.9,.3,1.2) both}
+  #shopname::after{content:attr(data-text);position:absolute;left:0;top:0;z-index:2;padding-right:calc(.9 * var(--u));
+    background:linear-gradient(100deg,var(--gold) 0%,var(--gold) 38%,#f2b705 50%,var(--gold) 62%,var(--gold) 100%);background-size:260% 100%;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:nameShine 3s ease-in-out infinite}
+  #shopname::before{content:attr(data-text);position:absolute;left:0;top:0;z-index:1;padding-right:calc(.9 * var(--u));
+    -webkit-text-fill-color:#825813;color:#825813;background:none;-webkit-background-clip:border-box;
+    text-shadow:calc(0.075 * var(--u)) calc(0.085 * var(--u)) 0 #8a5f14,calc(0.150 * var(--u)) calc(0.170 * var(--u)) 0 #7d5412,calc(0.225 * var(--u)) calc(0.255 * var(--u)) 0 #70490f,calc(0.300 * var(--u)) calc(0.340 * var(--u)) 0 #633f0d,calc(.5 * var(--u)) calc(.7 * var(--u)) calc(.7 * var(--u)) rgba(80,50,5,.3)}
   #logo{animation:logoBeat 2.8s ease-in-out infinite;transform-origin:50% 55%;filter:drop-shadow(0 0 calc(.5 * var(--u)) rgba(199,154,59,.35))}
   #subtitle{animation:nameIn 1.1s .25s ease both}
   @keyframes nameShine{0%{background-position:130% 0}70%,100%{background-position:-30% 0}}
@@ -473,7 +478,7 @@ TK_JS = """
 /* ---- running line ---- */
 function fitName(){
   const h = document.getElementById("shopname"); if (!h) return;
-  h.style.fontSize = "";
+  h.style.fontSize = ""; h.setAttribute("data-text", h.textContent);
   const box = h.parentElement; let fs = parseFloat(getComputedStyle(h).fontSize), n = 0;
   while (h.scrollWidth > box.clientWidth + 1 && fs > 10 && n++ < 40){ fs -= 1; h.style.fontSize = fs + "px"; }
 }

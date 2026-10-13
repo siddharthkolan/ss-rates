@@ -1,6 +1,6 @@
 {
-  "versionCode": 27,
-  "versionName": "2.9.2",
+  "versionCode": 28,
+  "versionName": "2.9.3",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "Update check fix"
+  "notes": "3D naam + shimmer"
 }
