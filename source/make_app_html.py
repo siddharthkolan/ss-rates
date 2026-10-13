@@ -156,6 +156,7 @@ src = once(src, '      <div>\n        <div class="n1">', '      <div class="nm">
 # app: sirf SELL dikhao (BUY aur L line hata do); laptop me dono rehte hain
 if not DESKTOP:
     src = once(src, '      <div class="px pb"><span class="lbl">BUY</span><span class="big ${it.p.bc}">${it.buy}</span><span class="hs">L - ${it.low}</span></div>\n', '')
+    src = once(src, '<span class="hs">H - ${it.high}</span></div>', '<span class="hs lh"><span>L - ${it.low}</span><span>H - ${it.high}</span></span></div>')
 BIG = """
   .hs{font-size:calc(1.15 * var(--u));font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:calc(.15 * var(--u))}
   @media (orientation: portrait){
@@ -211,6 +212,7 @@ SELLONLY = """
     .lbl{font-size:calc(1.3 * var(--u));letter-spacing:.14em}
     .big{font-size:calc(4.7 * var(--u))}
     .hs{font-size:calc(1.75 * var(--u))}
+    .hs.lh{display:flex;gap:calc(1.4 * var(--u));font-size:calc(1.5 * var(--u))}
   }
 """
 GLASS = GLASS + BIG + HDR
