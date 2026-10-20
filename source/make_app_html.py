@@ -46,7 +46,7 @@ if not DESKTOP:
       x.send();
     }
     function updBadge(){
-      if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); if (lastErr) document.getElementById("foot").textContent = "Feed error: " + lastErr + " (" + (Date.now() < directUntil ? "direct" : "cfg") + ")"; return; }
+      if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); if (lastErr) document.getElementById("foot").textContent = "Feed error: " + lastErr + " | " + ((navigator.userAgent.match(/Android [0-9.]+|Chrome\/[0-9]+/g) || []).join(" ")) + " (" + (Date.now() < directUntil ? "direct" : "cfg") + ")"; return; }
       const age = (Date.now() - lastGood) / 1000;
       if (age >= 8) noteFail();
       if (age < 10) setBadge("live", "\\u25CF LIVE");

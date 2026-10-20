@@ -1,6 +1,6 @@
 {
-  "versionCode": 33,
-  "versionName": "2.11",
+  "versionCode": 34,
+  "versionName": "2.12",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "TV/stick par landscape apne aap, logo saaf (transparent), feed error dikhega"
+  "notes": "TV/stick par landscape pakka, feed error + Android/Chrome version footer me"
 }

@@ -35,6 +35,15 @@
     invoke-virtual {v3, v4}, Landroid/view/Display;->getRealSize(Landroid/graphics/Point;)V
     iget v1, v4, Landroid/graphics/Point;->x:I
     iget v5, v4, Landroid/graphics/Point;->y:I
+    # screen rotate hui ho (90/270) to x,y ulta karo => natural orientation
+    invoke-virtual {v3}, Landroid/view/Display;->getRotation()I
+    move-result v0
+    and-int/lit8 v0, v0, 0x1
+    if-eqz v0, :cond_noswap
+    move v0, v1
+    move v1, v5
+    move v5, v0
+    :cond_noswap
     # 7 inch+ tablet portrait me bhi tall hota hai; sirf x > y*1.3 ko TV mano
     mul-int/lit8 v5, v5, 0x4
     mul-int/lit8 v1, v1, 0x3
