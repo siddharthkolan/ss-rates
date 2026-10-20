@@ -35,3 +35,23 @@
     :cond_end
     return-void
 .end method
+
+.method public tv()Z
+    .locals 2
+    .annotation runtime Landroid/webkit/JavascriptInterface;
+    .end annotation
+
+    :try_start_0
+    iget-object v0, p0, Lcom/shreess/rateboard/Net;->web:Landroid/webkit/WebView;
+    invoke-virtual {v0}, Landroid/view/View;->getContext()Landroid/content/Context;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shreess/rateboard/Tv;->isTv(Landroid/content/Context;)Z
+    move-result v1
+    :try_end_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
+    return v1
+
+    :catch_0
+    const/4 v1, 0x0
+    return v1
+.end method

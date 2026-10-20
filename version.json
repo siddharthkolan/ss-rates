@@ -1,6 +1,6 @@
 {
-  "versionCode": 43,
-  "versionName": "2.18",
+  "versionCode": 45,
+  "versionName": "2.19",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "TV box: feed server ka certificate (Let's Encrypt chain) app me bharosemand; error line me version"
+  "notes": "Sirf jewellery rates par center layout, 1 sec refresh, tv/phone alag config"
 }

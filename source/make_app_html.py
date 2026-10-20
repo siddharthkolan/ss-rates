@@ -98,7 +98,7 @@ if not DESKTOP:
     ''' % FEED
     src = src[:t0] + new_tick + src[t1:]
     # poll rate: app me 3 sec (laptop 1 sec), config se 2-6 sec
-    src = once(src, "const REFRESH_MS = 1000;", "let REFRESH_MS = 3000;")
+    src = once(src, "const REFRESH_MS = 1000;", "let REFRESH_MS = 1000;")
     src = once(src, "setInterval(tick, REFRESH_MS); tick();", "(function loop(){ tick(); setTimeout(loop, REFRESH_MS); })();")
 
 
@@ -378,7 +378,17 @@ function cCol(v){ return (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v)) 
 function cUrl(v){ return (typeof v === "string" && v.length < 400 && /^(https:\\/\\/|tel:\\+?\\d{6,15}$)/.test(v)) ? v : null; }
 function cId(v){ return (typeof v === "string" && /^\\d{1,6}$/.test(v)) ? v : null; }
 function cIds(a){ if (!Array.isArray(a)) return null; const o = []; a.slice(0, 12).forEach(function(v){ const k = cId(v); if (k) o.push(k); }); return o; }
+function devCfg(c){
+  try{
+    const tv = (window.SSNet && window.SSNet.tv) ? !!window.SSNet.tv() : window.matchMedia("(orientation: landscape)").matches;
+    const o = tv ? c.tv : c.phone;
+    const r = {}; for (const k in c) if (k !== "tv" && k !== "phone") r[k] = c[k];
+    if (o && typeof o === "object") for (const k2 in o) r[k2] = o[k2];
+    return r;
+  }catch(e){ return c; }
+}
 function applyCfg(c){
+  c = devCfg(c);
   if (!c || typeof c !== "object") return;
   let s, n;
   if ((s = cS(c.shopName, 40))) { document.getElementById("shopname").textContent = s; fitName(); }
@@ -590,7 +600,7 @@ src = once(src, '  const bn = document.getElementById("banner");',
  '  }\n'
  '  if (typeof FEED_DEFAULT !== "undefined"){\n'
  '  FEED_URL = (typeof c.feedUrl === "string" && /^https:\\/\\/[^\\s"\'<>]{4,290}$/.test(c.feedUrl)) ? c.feedUrl : FEED_DEFAULT;\n'
- '  if (typeof c.refreshMs === "number" && c.refreshMs >= 2000 && c.refreshMs <= 6000) REFRESH_MS = Math.round(c.refreshMs);\n'
+ '  if (typeof c.refreshMs === "number" && c.refreshMs >= 1000 && c.refreshMs <= 6000) REFRESH_MS = Math.round(c.refreshMs);\n'
  '  }\n'
  '  const bn = document.getElementById("banner");')
 
@@ -704,6 +714,41 @@ DESK_CSS = """
   #mnt.on span{transform:translateX(calc(2 * var(--u)))}
 """
 src_menu = True
+# 2k) sirf jewellery rates (left khali) => center me, bade, orientation ke hisab se
+JONLY_CSS = """
+  /* sirf jewellery rates: left khali ho to rates center me, size auto */
+  .jonly .left{display:none}
+  @media (orientation: landscape){
+    .jonly .main{display:flex;align-items:stretch}
+    .jonly .right{flex:1;display:grid;grid-template-columns:repeat(var(--jc,1),1fr);grid-template-rows:repeat(var(--jr,2),1fr);gap:calc(1.4 * var(--u))}
+    .jonly .gcard{padding:calc(1.2 * var(--u)) calc(1.8 * var(--u));justify-content:center}
+    .jonly .gtop h3{font-size:calc(2.2 * var(--u))}
+    .jonly .gtop .src{font-size:calc(1.3 * var(--u))}
+    .jonly .tiles{margin-top:calc(1 * var(--u));gap:calc(1.2 * var(--u))}
+    .jonly .tile{padding:calc(.6 * var(--u)) calc(1.4 * var(--u))}
+    .jonly .tile .k{font-size:calc(1.7 * var(--u))}
+    .jonly .tile .ut{font-size:calc(1.2 * var(--u))}
+    .jonly .tile .v{font-size:calc(5 * var(--u))}
+    .jonly .tile .g{font-size:calc(1.5 * var(--u))}
+    .jonly.jc2 .gtop h3{font-size:calc(1.6 * var(--u))}
+    .jonly.jc2 .tile .k{font-size:calc(1.2 * var(--u))}
+    .jonly.jc2 .tile .v{font-size:calc(3.2 * var(--u))}
+    .jonly.jc2 .tile .g{font-size:calc(1.1 * var(--u))}
+  }
+  @media (orientation: portrait){
+    .jonly .main{flex:1;justify-content:center}
+    .jonly .gtop h3{font-size:calc(1.5 * var(--u))}
+    .jonly .tile .v{font-size:calc(2.9 * var(--u))}
+  }
+"""
+JONLY_JS = """  { const lf = document.getElementById("left"), rg = document.getElementById("right");
+    document.body.classList.toggle("jonly", lf.children.length === 0 && rg.children.length > 0);
+    const n = rg.children.length, cols = n > 2 ? 2 : 1;
+    rg.style.setProperty("--jc", cols); rg.style.setProperty("--jr", Math.max(Math.ceil(n / cols), 1));
+    document.body.classList.toggle("jc2", cols === 2); }
+  /* BOTTOM STRIP: baaki rates */"""
+src = once(src, "  /* BOTTOM STRIP: baaki rates */", JONLY_JS)
+src = once(src, "</style>", JONLY_CSS + "</style>")
 # 3) logo relative
 if not DESKTOP:
     src = once(src, 'img.src = "/" + names[i]', 'img.src = names[i]')
