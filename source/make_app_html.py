@@ -25,8 +25,12 @@ if not DESKTOP:
     new_tick = '''const FEED_DEFAULT = "%s";
     let FEED_URL = FEED_DEFAULT, fails = 0, directUntil = 0;
     let lastGood = 0, busy = false, lastErr = "";
+    let ticks = 0, busyAt = 0;
     function tick(){
-      if (busy || document.hidden) return; busy = true;
+      ticks++;
+      if (busy && Date.now() - busyAt > 9000) busy = false;
+      if (busy) return; busy = true; busyAt = Date.now();
+      try{
       const x = new XMLHttpRequest();
       /* relay (config feedUrl) 5 baar lagatar fail ho to us waqt seedha original feed se le lo, taaki rates band na hon */
       if (fails >= 5){ directUntil = Date.now() + 60000; fails = 0; }
@@ -44,9 +48,10 @@ if not DESKTOP:
       x.onerror = function(){ busy = false; fails++; lastErr = "network/ssl error"; updBadge(); };
       x.ontimeout = function(){ busy = false; fails++; lastErr = "timeout"; updBadge(); };
       x.send();
+      }catch(e){ busy = false; fails++; lastErr = "exc " + String(e).slice(0, 60); updBadge(); }
     }
     function updBadge(){
-      if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); if (lastErr) document.getElementById("foot").textContent = "Feed error: " + lastErr + " | " + ((navigator.userAgent.match(/Android [0-9.]+|Chrome\/[0-9]+/g) || []).join(" ")) + " (" + (Date.now() < directUntil ? "direct" : "cfg") + ")"; return; }
+      if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); document.getElementById("foot").textContent = "Feed error: " + (lastErr || "no reply") + " t" + ticks + (document.hidden ? " hidden" : "") + " " + (FEED_URL === FEED_DEFAULT ? "def" : "cfg") + " | " + ((navigator.userAgent.match(/Android [0-9.]+|Chrome\/[0-9]+/g) || []).join(" ")) + " (" + (Date.now() < directUntil ? "direct" : "cfg") + ")"; return; }
       const age = (Date.now() - lastGood) / 1000;
       if (age >= 8) noteFail();
       if (age < 10) setBadge("live", "\\u25CF LIVE");

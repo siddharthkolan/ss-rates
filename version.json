@@ -1,6 +1,6 @@
 {
-  "versionCode": 34,
-  "versionName": "2.12",
+  "versionCode": 35,
+  "versionName": "2.13",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "TV/stick par landscape pakka, feed error + Android/Chrome version footer me"
+  "notes": "TV: feed fetch pakka (hidden check hataya, stuck fix), error detail footer me"
 }
