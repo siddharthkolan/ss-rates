@@ -64,6 +64,12 @@
     invoke-direct {v1, p0}, Lcom/shreess/rateboard/ExtClient;-><init>(Landroid/content/Context;)V
     invoke-virtual {v0, v1}, Landroid/webkit/WebView;->setWebViewClient(Landroid/webkit/WebViewClient;)V
 
+    # native feed bridge (box par WebView ka XHR/fetch ruke to)
+    new-instance v1, Lcom/shreess/rateboard/Net;
+    invoke-direct {v1, v0}, Lcom/shreess/rateboard/Net;-><init>(Landroid/webkit/WebView;)V
+    const-string v2, "SSNet"
+    invoke-virtual {v0, v1, v2}, Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object;Ljava/lang/String;)V
+
     invoke-virtual {p0, v0}, Landroid/app/Activity;->setContentView(Landroid/view/View;)V
 
     const-string v1, "file:///android_asset/index.html"

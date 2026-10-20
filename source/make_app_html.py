@@ -43,12 +43,26 @@ if not DESKTOP:
           .catch(function(e){ clearTimeout(tm); const m = String((e && e.name || "") + ":" + (e && e.message || e)).slice(0, 40); if (tag === "F") dF = m; else dG = m; });
       }catch(e){ if (tag === "F") dF = "exc"; else dG = "exc"; }
     }
+    let useNative = false;
+    window.ssNet = function(st, txt){
+      busy = false;
+      if (st === 200 && txt && txt.length > 20){ gotFeed(txt); }
+      else { fails++; lastErr = "native " + st + " " + String(txt).slice(0, 50); updBadge(); }
+    };
     function tick(){
       ticks++;
       if (!lastGood && (ticks & 3) === 2){ viaFetch(FEED_DEFAULT, "F"); }
       if (!lastGood && (ticks & 7) === 3){ try{ viaFetch(VER_URL, "G"); }catch(e){} }
-      if (busy && Date.now() - busyAt > 9000) busy = false;
-      if (busy) return; busy = true; busyAt = Date.now();
+      if (busy && Date.now() - busyAt > 9000){ busy = false; fails++; lastErr = lastErr || "stuck"; }
+      if (busy) return;
+      if (fails >= 5){ directUntil = Date.now() + 60000; fails = 0; }
+      if (window.SSNet && (useNative || (fails >= 3 && !lastGood))){
+        useNative = true; busy = true; busyAt = Date.now(); dX = "native";
+        try{ window.SSNet.get((Date.now() < directUntil ? FEED_DEFAULT : FEED_URL) + "?_=" + Date.now()); }
+        catch(e){ busy = false; fails++; lastErr = "native exc"; }
+        return;
+      }
+      busy = true; busyAt = Date.now();
       try{
       const x = new XMLHttpRequest();
       /* relay (config feedUrl) 5 baar lagatar fail ho to us waqt seedha original feed se le lo, taaki rates band na hon */
@@ -66,6 +80,7 @@ if not DESKTOP:
         updBadge();
       };
       x.onerror = function(){ busy = false; fails++; lastErr = "network/ssl error"; updBadge(); };
+      x.onabort = function(){ busy = false; fails++; lastErr = "aborted"; updBadge(); };
       x.ontimeout = function(){ busy = false; fails++; lastErr = "timeout"; updBadge(); };
       x.send();
       }catch(e){ busy = false; fails++; lastErr = "exc " + String(e).slice(0, 60); updBadge(); }
