@@ -24,7 +24,7 @@ if not DESKTOP:
     t1 = src.index("/* Logo:")
     new_tick = '''const FEED_DEFAULT = "%s";
     let FEED_URL = FEED_DEFAULT, fails = 0, directUntil = 0;
-    let lastGood = 0, busy = false;
+    let lastGood = 0, busy = false, lastErr = "";
     function tick(){
       if (busy || document.hidden) return; busy = true;
       const x = new XMLHttpRequest();
@@ -38,14 +38,15 @@ if not DESKTOP:
           fails = 0; lastGood = Date.now(); noteOK();
           try{ render(parseFeed(x.responseText)); }catch(e){}
           document.getElementById("foot").textContent = "Feed updated " + hhmmss(lastGood);
-        } else fails++;
+        } else { fails++; lastErr = "HTTP " + x.status + " len " + (x.responseText ? x.responseText.length : 0); }
         updBadge();
       };
-      x.onerror = x.ontimeout = function(){ busy = false; fails++; updBadge(); };
+      x.onerror = function(){ busy = false; fails++; lastErr = "network/ssl error"; updBadge(); };
+      x.ontimeout = function(){ busy = false; fails++; lastErr = "timeout"; updBadge(); };
       x.send();
     }
     function updBadge(){
-      if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); return; }
+      if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); if (lastErr) document.getElementById("foot").textContent = "Feed error: " + lastErr + " (" + (Date.now() < directUntil ? "direct" : "cfg") + ")"; return; }
       const age = (Date.now() - lastGood) / 1000;
       if (age >= 8) noteFail();
       if (age < 10) setBadge("live", "\\u25CF LIVE");

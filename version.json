@@ -1,6 +1,6 @@
 {
-  "versionCode": 32,
-  "versionName": "2.10",
+  "versionCode": 33,
+  "versionName": "2.11",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "TV version (Android TV / Fire TV)"
+  "notes": "TV/stick par landscape apne aap, logo saaf (transparent), feed error dikhega"
 }
