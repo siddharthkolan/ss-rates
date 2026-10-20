@@ -1,6 +1,6 @@
 {
-  "versionCode": 39,
-  "versionName": "2.15",
+  "versionCode": 40,
+  "versionName": "2.16",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "TV box: fetch fallback + feed diagnostics"
+  "notes": "TV box: detailed XHR event diagnostics"
 }
