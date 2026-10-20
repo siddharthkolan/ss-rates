@@ -1,6 +1,6 @@
 {
-  "versionCode": 46,
-  "versionName": "2.20",
+  "versionCode": 47,
+  "versionName": "2.21",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "12 ghante ka time (AM/PM), phone/TV alag rates config"
+  "notes": "TV: jewellery + comex/future/inr strip ek screen me, size auto"
 }

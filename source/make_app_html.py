@@ -722,15 +722,15 @@ JONLY_CSS = """
   @media (orientation: landscape){
     .jonly .main{display:flex;align-items:stretch}
     .jonly .right{flex:1;display:grid;grid-template-columns:repeat(var(--jc,1),1fr);grid-template-rows:repeat(var(--jr,2),1fr);gap:calc(1.4 * var(--u))}
-    .jonly .gcard{padding:calc(1.2 * var(--u)) calc(1.8 * var(--u));justify-content:center}
-    .jonly .gtop h3{font-size:calc(2.2 * var(--u))}
-    .jonly .gtop .src{font-size:calc(1.3 * var(--u))}
-    .jonly .tiles{margin-top:calc(1 * var(--u));gap:calc(1.2 * var(--u))}
-    .jonly .tile{padding:calc(.6 * var(--u)) calc(1.4 * var(--u))}
-    .jonly .tile .k{font-size:calc(1.7 * var(--u))}
-    .jonly .tile .ut{font-size:calc(1.2 * var(--u))}
-    .jonly .tile .v{font-size:calc(5 * var(--u))}
-    .jonly .tile .g{font-size:calc(1.5 * var(--u))}
+    .jonly .gcard{padding:calc(.9 * var(--u)) calc(1.8 * var(--u));justify-content:center}
+    .jonly .gtop h3{font-size:calc(1.9 * var(--u))}
+    .jonly .gtop .src{font-size:calc(1.1 * var(--u))}
+    .jonly .tiles{margin-top:calc(.8 * var(--u));gap:calc(1.2 * var(--u))}
+    .jonly .tile{padding:calc(.4 * var(--u)) calc(1.4 * var(--u))}
+    .jonly .tile .k{font-size:calc(1.4 * var(--u))}
+    .jonly .tile .ut{font-size:calc(1.1 * var(--u))}
+    .jonly .tile .v{font-size:calc(4.4 * var(--u))}
+    .jonly .tile .g{font-size:calc(1.3 * var(--u))}
     .jonly.jc2 .gtop h3{font-size:calc(1.6 * var(--u))}
     .jonly.jc2 .tile .k{font-size:calc(1.2 * var(--u))}
     .jonly.jc2 .tile .v{font-size:calc(3.2 * var(--u))}
