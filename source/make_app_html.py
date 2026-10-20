@@ -25,9 +25,28 @@ if not DESKTOP:
     new_tick = '''const FEED_DEFAULT = "%s";
     let FEED_URL = FEED_DEFAULT, fails = 0, directUntil = 0;
     let lastGood = 0, busy = false, lastErr = "";
-    let ticks = 0, busyAt = 0;
+    let ticks = 0, busyAt = 0, dX = "-", dF = "-", dG = "-";
+    function gotFeed(txt){
+      fails = 0; lastGood = Date.now(); noteOK();
+      try{ render(parseFeed(txt)); }catch(e){}
+      document.getElementById("foot").textContent = "Feed updated " + hhmmss(lastGood);
+      updBadge();
+    }
+    /* fetch() se bhi koshish (kuch TV boxes par XHR chup baith jata hai) + github ping sirf jaanch ke liye */
+    function viaFetch(url, tag){
+      try{
+        const c = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        const tm = setTimeout(function(){ try{ c && c.abort(); }catch(e){} }, 7000);
+        fetch(url + "?_=" + Date.now(), {cache: "no-store", signal: c ? c.signal : undefined})
+          .then(function(r){ clearTimeout(tm); if (tag === "F") dF = "http " + r.status; else dG = "http " + r.status;
+            return r.text().then(function(t){ if (tag === "F" && r.status === 200 && t && t.length > 20) gotFeed(t); }); })
+          .catch(function(e){ clearTimeout(tm); const m = String(e && e.name || e).slice(0, 22); if (tag === "F") dF = m; else dG = m; });
+      }catch(e){ if (tag === "F") dF = "exc"; else dG = "exc"; }
+    }
     function tick(){
       ticks++;
+      if (!lastGood && (ticks & 3) === 2){ viaFetch(FEED_DEFAULT, "F"); }
+      if (!lastGood && (ticks & 7) === 3){ try{ viaFetch(VER_URL, "G"); }catch(e){} }
       if (busy && Date.now() - busyAt > 9000) busy = false;
       if (busy) return; busy = true; busyAt = Date.now();
       try{
@@ -35,13 +54,12 @@ if not DESKTOP:
       /* relay (config feedUrl) 5 baar lagatar fail ho to us waqt seedha original feed se le lo, taaki rates band na hon */
       if (fails >= 5){ directUntil = Date.now() + 60000; fails = 0; }
       x.open("GET", (Date.now() < directUntil ? FEED_DEFAULT : FEED_URL) + "?_=" + Date.now(), true);
-      x.timeout = 5000;
+      x.timeout = 5000; dX = "sent";
+      x.onreadystatechange = function(){ dX = "rs" + x.readyState + " st" + x.status; };
       x.onload = function(){
         busy = false;
         if (x.status === 200 && x.responseText && x.responseText.length > 20){
-          fails = 0; lastGood = Date.now(); noteOK();
-          try{ render(parseFeed(x.responseText)); }catch(e){}
-          document.getElementById("foot").textContent = "Feed updated " + hhmmss(lastGood);
+          gotFeed(x.responseText);
         } else { fails++; lastErr = "HTTP " + x.status + " len " + (x.responseText ? x.responseText.length : 0); }
         updBadge();
       };
@@ -51,7 +69,7 @@ if not DESKTOP:
       }catch(e){ busy = false; fails++; lastErr = "exc " + String(e).slice(0, 60); updBadge(); }
     }
     function updBadge(){
-      if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); document.getElementById("foot").textContent = "Feed error: " + (lastErr || "no reply") + " t" + ticks + (document.hidden ? " hidden" : "") + " " + (FEED_URL === FEED_DEFAULT ? "def" : "cfg") + " | " + ((navigator.userAgent.match(/Android [0-9.]+|Chrome\/[0-9]+/g) || []).join(" ")) + " (" + (Date.now() < directUntil ? "direct" : "cfg") + ")"; return; }
+      if (!lastGood){ setBadge("off", "FEED OFFLINE"); noteFail(); document.getElementById("foot").textContent = "Feed error: " + (lastErr || "no reply") + " t" + ticks + (document.hidden ? " hidden" : "") + " " + (FEED_URL === FEED_DEFAULT ? "def" : "cfg") + " | " + ((navigator.userAgent.match(/Android [0-9.]+|Chrome\/[0-9]+/g) || []).join(" ")) + " | X:" + dX + " F:" + dF + " G:" + dG; return; }
       const age = (Date.now() - lastGood) / 1000;
       if (age >= 8) noteFail();
       if (age < 10) setBadge("live", "\\u25CF LIVE");

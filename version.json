@@ -1,6 +1,6 @@
 {
-  "versionCode": 36,
-  "versionName": "2.14",
+  "versionCode": 39,
+  "versionName": "2.15",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "Popup me cross (X) button: sirf message band hoga"
+  "notes": "TV box: fetch fallback + feed diagnostics"
 }
