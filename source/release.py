@@ -62,9 +62,11 @@ if (int(mm.group(1)), mm.group(2)) != (code, name): fail(f"APK manifest {mm.grou
 for perm in ("android.permission.INTERNET", "android.permission.POST_NOTIFICATIONS", "android.permission.RECEIVE_BOOT_COMPLETED"):
     if f"uses-permission: name='{perm}'" not in badging: fail(f"manifest me {perm} nahi")
 xt = run([AAPT, "dump", "xmltree", "--file", "AndroidManifest.xml", OUT])
+if "banner" not in xt or "tv_banner" not in xt and "res/" not in xt: fail("TV banner manifest me nahi")
 if "PollJob" not in xt or "android.permission.BIND_JOB_SERVICE" not in xt: fail("PollJob service/BIND_JOB_SERVICE manifest me nahi")
 z = zipfile.ZipFile(OUT)
 if not any(n.endswith("ic_stat.png") for n in z.namelist()): fail("ic_stat icon APK me nahi")
+if not any("tv_banner" in n for n in z.namelist()): fail("tv_banner APK me nahi")
 if z.testzip(): fail("zip corrupt")
 html = z.read("assets/index.html").decode()
 if f"const APP_VER = {code}," not in html: fail("app ke andar APP_VER manifest se alag hai")
@@ -96,7 +98,7 @@ for sec in (raw[:start], raw[cdo:eo], bytes(s3)):
         c = sec[i:i + (1 << 20)]; ds.append(hashlib.sha256(b"\xa5" + struct.pack("<I", len(c)) + c).digest())
 if hashlib.sha256(b"\x5a" + struct.pack("<I", len(ds)) + b"".join(ds)).digest() != want: fail("v2 digest mismatch")
 dex = z.read("classes.dex")
-for need in (b"onPause", b"onResume", b"setMediaPlaybackRequiresUserGesture", b"ExtClient", b"PollJob", b"Notifier", b"Sched", b"shop_msgs", b"ic_stat", b"JobInfo"):
+for need in (b"onPause", b"onResume", b"setMediaPlaybackRequiresUserGesture", b"ExtClient", b"rateboard/Tv;", b"setRequestedOrientation", b"android.software.leanback", b"PollJob", b"Notifier", b"Sched", b"shop_msgs", b"ic_stat", b"JobInfo"):
     if need not in dex: fail(f"dex me {need.decode()} nahi mila")
 import zlib
 if zlib.adler32(dex[12:]) & 0xffffffff != struct.unpack("<I", dex[8:12])[0] or hashlib.sha1(dex[32:]).digest() != dex[12:32]: fail("dex checksum")

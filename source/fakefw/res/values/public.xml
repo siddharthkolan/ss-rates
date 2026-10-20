@@ -6,6 +6,7 @@
     <public type="attr" name="icon" id="0x01010002" />
     <public type="attr" name="name" id="0x01010003" />
     <public type="attr" name="permission" id="0x01010006" />
+    <public type="attr" name="banner" id="0x010103f2" />
     <public type="attr" name="exported" id="0x01010010" />
     <public type="attr" name="screenOrientation" id="0x0101001e" />
     <public type="attr" name="configChanges" id="0x0101001f" />

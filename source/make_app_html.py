@@ -215,8 +215,24 @@ SELLONLY = """
     .hs.lh{display:flex;gap:calc(1.4 * var(--u));font-size:calc(1.5 * var(--u))}
   }
 """
+TVCSS = """
+  /* ===== Android TV (landscape): laptop jaisa layout, sirf SELL, dock nahi ===== */
+  @media (orientation: landscape){
+    body{padding-bottom:calc(1.5 * var(--u))}
+    .dock{display:none}
+    .left{grid-template-rows:none;grid-auto-rows:1fr}
+    .row{grid-template-columns:1fr auto;gap:calc(2 * var(--u));padding:calc(.7 * var(--u)) calc(2 * var(--u))}
+    .n1{font-size:calc(2.3 * var(--u))}
+    .big{font-size:calc(3.7 * var(--u))}
+    .lbl{font-size:calc(1 * var(--u))}
+    .unit,.st{font-size:calc(1.15 * var(--u))}
+    .hs.lh{display:flex;gap:calc(1.6 * var(--u));font-size:calc(1.35 * var(--u))}
+    .brand h1{font-size:calc(3 * var(--u));letter-spacing:.08em;white-space:nowrap}
+    #upgo{display:none}
+  }
+"""
 GLASS = GLASS + BIG + HDR
-if not DESKTOP: GLASS += SELLONLY
+if not DESKTOP: GLASS += SELLONLY + TVCSS
 if DESKTOP: GLASS = GLASS.replace('  body{padding-bottom:calc(14 * var(--u))}\n', '')
 src = once(src, "</style>", GLASS + "</style>")
 if not DESKTOP: src = once(src, '<footer id="foot">', DOCK + '<footer id="foot">')
@@ -258,7 +274,8 @@ let updVar = 0;
 function showUpdate(j){
   const t = document.getElementById("uptxt");
   if (document.getElementById("updbar").hidden){
-    t.textContent = UPD_FUN[updVar++ %% UPD_FUN.length] + "   \u00B7   v" + j.versionName + " available";
+    t.textContent = UPD_FUN[updVar++ %% UPD_FUN.length] + "   \u00B7   v" + j.versionName + " available" +
+      (matchMedia("(orientation: landscape)").matches ? "   \u00B7   Downloader app me link kholein" : "");
     document.getElementById("updbar").hidden = false;
     const w = t.offsetWidth || 900; t.style.setProperty("--dur", Math.max(10, w / 70) + "s");
   }
@@ -281,7 +298,7 @@ setInterval(checkUpdate, 5 * 60 * 1000);
 document.addEventListener("visibilitychange", function(){ if (!document.hidden) setTimeout(checkUpdate, 1500); });
 """ % (VC, VER_URL)
 VN = re.search(r'android:versionName="([^"]+)"', open(os.path.join(root, "AndroidManifest.xml")).read()).group(1)
-if not DESKTOP: src = once(src, "</style>", UPD_CSS + "</style>")
+src = once(src, "</style>", UPD_CSS + "</style>")
 if not DESKTOP: src = once(src, "</script>\n</body>", UPD_JS + "</script>\n</body>")
 # footer me app version bhi
 if not DESKTOP:
@@ -495,7 +512,7 @@ TK_CSS = """
     font-size:calc(1.35 * var(--u));animation:tkmove var(--dur,22s) linear infinite}
   @keyframes tkmove{to{transform:translateX(-100%)}}
 """
-src = once(src, '<div id="banner" hidden></div>\n', '<div id="ticker"><span id="tk"></span></div>\n' + ('' if DESKTOP else UPD_BAR) + '<div id="banner" hidden></div>\n')
+src = once(src, '<div id="banner" hidden></div>\n', '<div id="ticker"><span id="tk"></span></div>\n' + UPD_BAR + '<div id="banner" hidden></div>\n')
 src = once(src, "</style>", TK_CSS + "</style>")
 TK_JS = """
 /* ---- running line ---- */
@@ -548,6 +565,68 @@ src = once(src, "</script>\n</body>", BG_JS + "</script>\n</body>")
 src = once(src, 'const LEFT_IDS   = ["7291", "7386", "7627", "7363", "7634"];', 'const LEFT_IDS   = ["7291", "7386", "7627", "7363"];')
 src = once(src, "const HIDE_IDS   = [];", 'const HIDE_IDS   = ["7634"];')
 
+DESK_MENU_HTML = """<div id="mn" hidden>
+  <button id="mnb" type="button" aria-label="Menu">\u22EE</button>
+  <div id="mnp" hidden>
+    <div class="mrow"><div><div class="mt">PC ke saath auto start</div><div class="ms" id="mns">...</div></div>
+      <button id="mnt" type="button" role="switch" aria-checked="false" aria-label="Auto start"><span></span></button></div>
+  </div>
+</div>
+"""
+DESK_MENU_JS = """
+/* ---- 3 dot menu: auto start on/off (sirf .exe wale board me dikhta hai) ---- */
+(function(){
+  const box = document.getElementById("mn"), b = document.getElementById("mnb"), p = document.getElementById("mnp"),
+        t = document.getElementById("mnt"), st = document.getElementById("mns"); let tm = 0;
+  const H = {"X-SS-Board": "1"};
+  function ui(on){ t.setAttribute("aria-checked", on ? "true" : "false"); t.className = on ? "on" : "";
+    st.textContent = on ? "ON \u2014 PC chalu hote hi board khul jayega" : "OFF \u2014 board haath se kholna padega"; }
+  function arm(){ clearTimeout(tm); tm = setTimeout(function(){ p.hidden = true; }, 10000); }
+  fetch("/api/startup", {headers: H, cache: "no-store"}).then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+    .then(function(j){ ui(!!j.on); box.hidden = false; }).catch(function(){});
+  b.addEventListener("click", function(e){ e.stopPropagation(); p.hidden = !p.hidden; if (!p.hidden) arm(); });
+  p.addEventListener("click", function(e){ e.stopPropagation(); arm(); });
+  document.addEventListener("click", function(){ p.hidden = true; });
+  t.addEventListener("click", function(){
+    const want = t.getAttribute("aria-checked") !== "true"; t.disabled = true;
+    fetch("/api/startup", {method: "POST", headers: {"X-SS-Board": "1", "Content-Type": "application/json"}, body: JSON.stringify({on: want})})
+      .then(function(r){ return r.ok ? r.json() : Promise.reject(); }).then(function(j){ ui(!!j.on); })
+      .catch(function(){ st.textContent = "Badal nahi paya, dobara try karein"; }).then(function(){ t.disabled = false; });
+  });
+})();
+"""
+DESK_UPD_JS = """
+/* ---- exe update check: sirf ek line + Update button (naya .exe aane par) ---- */
+const EXE_VER = /*EXE_VER*/0, EXE_NAME = "/*EXE_NAME*/", EXE_VER_URL = "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/desktop-version.json";
+const UPD_FUN = [
+  "\U0001F680 Naya version aa gaya! Rate board me nayi chamak \u2728",
+  "\U0001F381 Surprise! Update taiyar hai, naye features \U0001F60D",
+  "\U0001F4AA Board ne gym join kar liya! Naya version aur fit hai \U0001F60E",
+  "\U0001F389 Party shuru! Naya version aaya, bas ek click \U0001F973"
+];
+let updVar = 0;
+function checkUpdate(){
+  if (!EXE_VER || document.hidden) return;   // .exe ke bahar (serve.py) kuch nahi
+  const x = new XMLHttpRequest();
+  x.open("GET", EXE_VER_URL + "?_=" + Date.now(), true); x.timeout = 8000;
+  x.onload = function(){
+    try{ if (x.status !== 200) return; const j = JSON.parse(x.responseText);
+      if (j.versionCode > EXE_VER && typeof j.exe === "string" && /^https:\\/\\//.test(j.exe)){
+        const t = document.getElementById("uptxt"), bar = document.getElementById("updbar");
+        if (bar.hidden){
+          t.textContent = UPD_FUN[updVar++ %% UPD_FUN.length] + "   \u00B7   v" + String(j.versionName).slice(0, 12) + " available";
+          bar.hidden = false;
+          const w = t.offsetWidth || 900; t.style.setProperty("--dur", Math.max(10, w / 70) + "s");
+        }
+        const a = document.getElementById("upgo"); a.setAttribute("href", j.exe); a.setAttribute("target", "_blank"); a.setAttribute("rel", "noopener");
+      } }catch(e){}
+  };
+  x.send();
+}
+setTimeout(checkUpdate, 4000); setTimeout(checkUpdate, 20000); setTimeout(checkUpdate, 60000);
+setInterval(checkUpdate, 5 * 60 * 1000);
+document.addEventListener("visibilitychange", function(){ if (!document.hidden) setTimeout(checkUpdate, 1500); });
+""".replace("%%", "%")
 DESK_CSS = """
   /* ===== desktop / TV (landscape) ===== */
   @media (orientation: landscape){
@@ -556,7 +635,24 @@ DESK_CSS = """
     #ticker{margin:0}
     .brand h1{font-size:calc(3 * var(--u));letter-spacing:.08em}
   }
+  #mn{position:fixed;right:calc(1.2 * var(--u));bottom:calc(.8 * var(--u));z-index:30}
+  #mn[hidden],#mnp[hidden]{display:none}
+  #mnb{width:calc(3.2 * var(--u));height:calc(3.2 * var(--u));border-radius:50%;border:1px solid rgba(255,255,255,.8);
+    background:rgba(255,255,255,.45);color:var(--ink);font-size:calc(2.2 * var(--u));line-height:1;cursor:pointer;opacity:.35;transition:opacity .2s;
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  #mn:hover #mnb,#mnb:focus{opacity:1}
+  #mnp{position:absolute;right:0;bottom:calc(4 * var(--u));width:calc(26 * var(--u));padding:calc(1.4 * var(--u)) calc(1.6 * var(--u));
+    border-radius:calc(1.6 * var(--u));background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.95);
+    -webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);box-shadow:0 calc(.8 * var(--u)) calc(3 * var(--u)) rgba(60,45,15,.25)}
+  #mnp .mrow{display:flex;align-items:center;justify-content:space-between;gap:calc(1.2 * var(--u))}
+  #mnp .mt{font-weight:700;font-size:calc(1.15 * var(--u));color:var(--ink)}
+  #mnp .ms{font-size:calc(.9 * var(--u));color:var(--muted);margin-top:calc(.3 * var(--u))}
+  #mnt{flex:none;position:relative;width:calc(4.6 * var(--u));height:calc(2.6 * var(--u));border-radius:calc(2 * var(--u));border:0;background:#c9c2b0;cursor:pointer;transition:background .2s}
+  #mnt span{position:absolute;top:calc(.3 * var(--u));left:calc(.3 * var(--u));width:calc(2 * var(--u));height:calc(2 * var(--u));border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  #mnt.on{background:#1f9d62}
+  #mnt.on span{transform:translateX(calc(2 * var(--u)))}
 """
+src_menu = True
 # 3) logo relative
 if not DESKTOP:
     src = once(src, 'img.src = "/" + names[i]', 'img.src = names[i]')
@@ -565,7 +661,11 @@ if not DESKTOP:
 src = src.replace("   ·   F = full screen", "").replace("F = full screen", "")
 os.makedirs(os.path.join(root, "assets"), exist_ok=True)
 if DESKTOP:
+    src = src.replace("<title>Shree SS Jewellers - Live Rates</title>", '<title>Shree SS Jewellers - Rate Board</title>\n<link rel="icon" type="image/png" href="/favicon.png">', 1)
     src = once(src, "</style>", DESK_CSS + "</style>")
+    src = once(src, '<footer id="foot">', DESK_MENU_HTML + '<footer id="foot">')
+    src = once(src, "</script>\n</body>", DESK_MENU_JS + DESK_UPD_JS + "</script>\n</body>")
+    src = once(src, 'hhmmss(j.fetched_at*1000) + "";', 'hhmmss(j.fetched_at*1000) + (EXE_VER ? "  \\u00B7  v" + EXE_NAME : "");')
     open(os.path.join(root, "..", "rate_board_desktop.html"), "w", encoding="utf-8").write(src)
     print("desktop page ready"); sys.exit(0)
 open(os.path.join(root, "assets", "index.html"), "w", encoding="utf-8").write(src)

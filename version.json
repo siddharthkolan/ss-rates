@@ -1,6 +1,6 @@
 {
-  "versionCode": 30,
-  "versionName": "2.9.5",
+  "versionCode": 32,
+  "versionName": "2.10",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "SELL + Low/High line"
+  "notes": "TV version (Android TV / Fire TV)"
 }

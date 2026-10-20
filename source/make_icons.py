@@ -43,3 +43,23 @@ for name, px in stat.items():
     d = os.path.join(root, "res", f"drawable-{name}"); os.makedirs(d, exist_ok=True)
     sil.save(os.path.join(d, "ic_stat.png"), optimize=True)
     print("stat", name, px)
+
+# --- Android TV banner (home screen par app ka card): 320x180 dp ---
+from PIL import ImageFont
+BANNER_FONT = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
+for name, w in {"mdpi": 320, "hdpi": 480, "xhdpi": 640, "xxhdpi": 960}.items():
+    h = w * 9 // 16; k = w / 320
+    img = Image.new("RGB", (w, h), (251, 246, 234))
+    d = ImageDraw.Draw(img)
+    for y in range(h):                                   # halka sunehra gradient
+        t = y / h; d.line([(0, y), (w, y)], fill=(int(251 - 10 * t), int(246 - 22 * t), int(234 - 52 * t)))
+    mark = logo.copy().convert("RGBA"); sz = int(112 * k); mark.thumbnail((sz, sz), Image.LANCZOS)
+    mx, my = int(22 * k), (h - mark.height) // 2
+    img.paste(mark, (mx, my), mark)
+    f1 = ImageFont.truetype(BANNER_FONT, int(21 * k)); f2 = ImageFont.truetype(BANNER_FONT, int(10.5 * k))
+    tx = mx + mark.width + int(14 * k)
+    d.text((tx, int(h / 2 - 30 * k)), "SHREE SS", font=f1, fill=(166, 122, 34))
+    d.text((tx, int(h / 2 - 6 * k)), "JEWELLERS", font=f1, fill=(166, 122, 34))
+    d.text((tx, int(h / 2 + 26 * k)), "LIVE GOLD & SILVER RATES", font=f2, fill=(125, 112, 90))
+    dd = os.path.join(root, "res", f"drawable-{name}"); os.makedirs(dd, exist_ok=True)
+    img.save(os.path.join(dd, "tv_banner.png"), optimize=True); print("banner", name, w, h)

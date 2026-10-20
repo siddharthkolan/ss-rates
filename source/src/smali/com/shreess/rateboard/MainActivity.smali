@@ -69,6 +69,19 @@
     const-string v1, "file:///android_asset/index.html"
     invoke-virtual {v0, v1}, Landroid/webkit/WebView;->loadUrl(Ljava/lang/String;)V
 
+    # TV par: landscape (0) aur background notification ki zarurat nahi
+    invoke-static {p0}, Lcom/shreess/rateboard/Tv;->isTv(Landroid/content/Context;)Z
+    move-result v1
+    if-eqz v1, :phone
+    const/4 v1, 0x0
+    :try_start_t
+    invoke-virtual {p0, v1}, Landroid/app/Activity;->setRequestedOrientation(I)V
+    :try_end_t
+    .catch Ljava/lang/Throwable; {:try_start_t .. :try_end_t} :catch_t
+    :catch_t
+    return-void
+
+    :phone
     # background notification check schedule (galti par bhi app crash nahi hoga)
     :try_start_s
     invoke-static {p0}, Lcom/shreess/rateboard/Sched;->go(Landroid/app/Activity;)V
