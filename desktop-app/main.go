@@ -1,5 +1,5 @@
 // Shree SS Jewellers - Rate Board (Windows .exe)
-// Ek hi file: andar rates leta hai (har 1 sec), board page deta hai, aur Edge/Chrome ko full screen me kholta hai.
+// Ek hi file: andar rates leta hai (har 1 sec), board page deta hai, aur Edge/Chrome ko app window me kholta hai.
 package main
 
 import (
@@ -25,6 +25,9 @@ var pageHTML []byte
 
 //go:embed logo.png
 var logoPNG []byte
+
+//go:embed favicon.png
+var faviconPNG []byte
 
 const defaultUpstream = "https://bcast.bhavyalaxmibullion.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/bhavyalaxmi"
 const runKey = `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`
@@ -146,6 +149,10 @@ func newMux() *http.ServeMux {
 		w.Header().Set("Cache-Control", "no-store")
 		json.NewEncoder(w).Encode(s)
 	})
+	mux.HandleFunc("/favicon.png", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/png")
+		w.Write(faviconPNG)
+	})
 	mux.HandleFunc("/logo.png", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
 		w.Write(logoPNG)
@@ -228,15 +235,13 @@ func openBrowser(url string) {
 	var args []string
 	switch kind {
 	case "firefox":
-		args = []string{"-kiosk", url}
+		args = []string{"-new-window", url}
 	default:
+		// app window: address bar/tabs nahi, par normal (full screen nahi) window. F dabane par full screen.
 		profile := filepath.Join(dataDir, "browser-profile")
-		args = []string{"--kiosk", url, "--user-data-dir=" + profile, "--no-first-run", "--no-default-browser-check",
+		args = []string{"--app=" + url, "--window-size=1280,800", "--user-data-dir=" + profile, "--no-first-run", "--no-default-browser-check",
 			"--disable-infobars", "--noerrdialogs", "--autoplay-policy=no-user-gesture-required",
 			"--overscroll-history-navigation=0", "--disable-features=Translate,TranslateUI"}
-		if kind == "edge" {
-			args = append(args, "--edge-kiosk-type=fullscreen")
-		}
 	}
 	logf("browser: %s (%s) %s", path, kind, url)
 	cmd := exec.Command(path, args...)
