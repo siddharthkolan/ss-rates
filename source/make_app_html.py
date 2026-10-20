@@ -708,6 +708,8 @@ src_menu = True
 if not DESKTOP:
     src = once(src, 'img.src = "/" + names[i]', 'img.src = names[i]')
     src = once(src, 'img.src = "/" + names[0]', 'img.src = names[0]')
+# 3b) error footer par bhi version dikhe
+if not DESKTOP: src = once(src, '"Feed error: " + (lastErr', '"v%s  Feed error: " + (lastErr' % VN)
 # 4) footer
 src = src.replace("   ·   F = full screen", "").replace("F = full screen", "")
 os.makedirs(os.path.join(root, "assets"), exist_ok=True)

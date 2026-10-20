@@ -1,6 +1,6 @@
 {
-  "versionCode": 41,
-  "versionName": "2.17",
+  "versionCode": 43,
+  "versionName": "2.18",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "TV box: feed Android ke andar se (native) laane ka rasta"
+  "notes": "TV box: feed server ka certificate (Let's Encrypt chain) app me bharosemand; error line me version"
 }

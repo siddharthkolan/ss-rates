@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sirf rates-feed server ke liye: Let's Encrypt (ISRG) ki chain ke CA certificates bhi bharosemand, taaki purane TV boxes
+     (jinke system store me ye nahi hote) feed le sakein. Baaki sab sites ke liye normal system certificates. -->
+<network-security-config>
+    <domain-config>
+        <domain includeSubdomains="false">bcast.bhavyalaxmibullion.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/ca_root_ye" />
+            <certificates src="@raw/ca_ye1" />
+            <certificates src="@raw/ca_isrg_x2" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

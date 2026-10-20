@@ -8,6 +8,7 @@
     <attr name="name" format="string" />
     <attr name="permission" format="string" />
     <attr name="banner" format="reference" />
+    <attr name="networkSecurityConfig" format="reference" />
     <attr name="exported" format="boolean" />
     <attr name="screenOrientation">
         <enum name="unspecified" value="-1" />

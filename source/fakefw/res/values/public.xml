@@ -20,4 +20,5 @@
     <public type="attr" name="hardwareAccelerated" id="0x010102d3" />
     <public type="attr" name="compileSdkVersion" id="0x01010572" />
     <public type="attr" name="compileSdkVersionCodename" id="0x01010573" />
+    <public type="attr" name="networkSecurityConfig" id="0x01010527" />
 </resources>
