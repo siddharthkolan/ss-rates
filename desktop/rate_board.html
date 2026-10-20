@@ -245,6 +245,22 @@
     #ticker{margin:0}
     .brand h1{font-size:calc(3 * var(--u));letter-spacing:.08em}
   }
+  #mn{position:fixed;right:calc(1.2 * var(--u));bottom:calc(.8 * var(--u));z-index:30}
+  #mn[hidden],#mnp[hidden]{display:none}
+  #mnb{width:calc(3.2 * var(--u));height:calc(3.2 * var(--u));border-radius:50%;border:1px solid rgba(255,255,255,.8);
+    background:rgba(255,255,255,.45);color:var(--ink);font-size:calc(2.2 * var(--u));line-height:1;cursor:pointer;opacity:.35;transition:opacity .2s;
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  #mn:hover #mnb,#mnb:focus{opacity:1}
+  #mnp{position:absolute;right:0;bottom:calc(4 * var(--u));width:calc(26 * var(--u));padding:calc(1.4 * var(--u)) calc(1.6 * var(--u));
+    border-radius:calc(1.6 * var(--u));background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.95);
+    -webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);box-shadow:0 calc(.8 * var(--u)) calc(3 * var(--u)) rgba(60,45,15,.25)}
+  #mnp .mrow{display:flex;align-items:center;justify-content:space-between;gap:calc(1.2 * var(--u))}
+  #mnp .mt{font-weight:700;font-size:calc(1.15 * var(--u));color:var(--ink)}
+  #mnp .ms{font-size:calc(.9 * var(--u));color:var(--muted);margin-top:calc(.3 * var(--u))}
+  #mnt{flex:none;position:relative;width:calc(4.6 * var(--u));height:calc(2.6 * var(--u));border-radius:calc(2 * var(--u));border:0;background:#c9c2b0;cursor:pointer;transition:background .2s}
+  #mnt span{position:absolute;top:calc(.3 * var(--u));left:calc(.3 * var(--u));width:calc(2 * var(--u));height:calc(2 * var(--u));border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  #mnt.on{background:#1f9d62}
+  #mnt.on span{transform:translateX(calc(2 * var(--u)))}
 </style>
 </head>
 <body>
@@ -275,6 +291,13 @@
 <section class="strip" id="strip"></section>
 <div id="notice" hidden><div class="box"><div class="ic" id="nic"></div><h2 id="nh"></h2><p id="np"></p></div></div>
 <div id="back" role="status"></div>
+<div id="mn" hidden>
+  <button id="mnb" type="button" aria-label="Menu">⋮</button>
+  <div id="mnp" hidden>
+    <div class="mrow"><div><div class="mt">PC ke saath auto start</div><div class="ms" id="mns">...</div></div>
+      <button id="mnt" type="button" role="switch" aria-checked="false" aria-label="Auto start"><span></span></button></div>
+  </div>
+</div>
 <footer id="foot"></footer>
 
 <script>
@@ -679,6 +702,27 @@ document.addEventListener("visibilitychange", function(){
     setTimeout(tick, 200);
   }
 });
+
+/* ---- 3 dot menu: auto start on/off (sirf .exe wale board me dikhta hai) ---- */
+(function(){
+  const box = document.getElementById("mn"), b = document.getElementById("mnb"), p = document.getElementById("mnp"),
+        t = document.getElementById("mnt"), st = document.getElementById("mns"); let tm = 0;
+  const H = {"X-SS-Board": "1"};
+  function ui(on){ t.setAttribute("aria-checked", on ? "true" : "false"); t.className = on ? "on" : "";
+    st.textContent = on ? "ON — PC chalu hote hi board khul jayega" : "OFF — board haath se kholna padega"; }
+  function arm(){ clearTimeout(tm); tm = setTimeout(function(){ p.hidden = true; }, 10000); }
+  fetch("/api/startup", {headers: H, cache: "no-store"}).then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+    .then(function(j){ ui(!!j.on); box.hidden = false; }).catch(function(){});
+  b.addEventListener("click", function(e){ e.stopPropagation(); p.hidden = !p.hidden; if (!p.hidden) arm(); });
+  p.addEventListener("click", function(e){ e.stopPropagation(); arm(); });
+  document.addEventListener("click", function(){ p.hidden = true; });
+  t.addEventListener("click", function(){
+    const want = t.getAttribute("aria-checked") !== "true"; t.disabled = true;
+    fetch("/api/startup", {method: "POST", headers: {"X-SS-Board": "1", "Content-Type": "application/json"}, body: JSON.stringify({on: want})})
+      .then(function(r){ return r.ok ? r.json() : Promise.reject(); }).then(function(j){ ui(!!j.on); })
+      .catch(function(){ st.textContent = "Badal nahi paya, dobara try karein"; }).then(function(){ t.disabled = false; });
+  });
+})();
 </script>
 </body>
 </html>
