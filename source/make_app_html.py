@@ -425,6 +425,10 @@ FUN_CSS = """
   #notice.soon .ic{animation:wob 1.2s ease-in-out infinite}
   #notice h2{font-size:calc(2.1 * var(--u))}
   #notice p{font-size:calc(1.5 * var(--u))}
+  #notice .box{position:relative}
+  #notice .nx{position:absolute;top:calc(.9 * var(--u));right:calc(.9 * var(--u));width:calc(3.6 * var(--u));height:calc(3.6 * var(--u));border:0;border-radius:50%;
+    background:rgba(0,0,0,.07);color:#6b6254;font-size:calc(2 * var(--u));line-height:1;cursor:pointer;padding:0;font-family:inherit}
+  #notice .nx:focus,#notice .snd:focus{outline:calc(.3 * var(--u)) solid #c79a3b}
   #notice .snd{margin-top:calc(1.4 * var(--u));border:0;border-radius:calc(2 * var(--u));padding:calc(.7 * var(--u)) calc(1.4 * var(--u));
     background:rgba(0,0,0,.06);color:var(--muted);font:inherit;font-size:calc(1.2 * var(--u));cursor:pointer}
   #back{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 2 * var(--u));z-index:60;transform:translate(-50%,-260%);visibility:hidden;
@@ -474,9 +478,10 @@ const FUN = {
     ["Rates kachhua ki speed se aa rahe hain \\uD83D\\uDC22", "Ek-do minute baad dobara dekhna \\uD83D\\uDE09"],
     ["Sone ko bhi aaram chahiye \\uD83D\\uDE34\\u2728", "Rates jaldi hi fresh hokar aayenge \\uD83D\\uDCAB"]]}
 };
+let ssDismissed = false;
 showNotice = function(kind){
   const n = document.getElementById("notice");
-  if (document.hidden || (!n.hidden && n.className === kind)) return;
+  if (document.hidden || ssDismissed || (!n.hidden && n.className === kind)) return;
   ssDown = true;
   const f = FUN[kind], i = ssVar++ % f.v.length, m = MSG[kind];
   const ic = document.getElementById("nic"); ic.textContent = f.em[i];
@@ -488,11 +493,16 @@ showNotice = function(kind){
       b.textContent = ssMuted ? "\\uD83D\\uDD07 Sound off" : "\\uD83D\\uDD0A Sound on"; if (!ssMuted) ssSfx(document.getElementById("notice").className); });
     document.querySelector("#notice .box").appendChild(b); }
   b.textContent = ssMuted ? "\\uD83D\\uDD07 Sound off" : "\\uD83D\\uDD0A Sound on";
+  let x = document.getElementById("nx");
+  if (!x){ x = document.createElement("button"); x.id = "nx"; x.type = "button"; x.className = "nx"; x.textContent = "\\u2715"; x.setAttribute("aria-label", "Close");
+    x.addEventListener("click", function(){ ssDismissed = true; ssDown = false; hideNotice(); });
+    document.querySelector("#notice .box").appendChild(x); }
   n.className = kind; n.hidden = false;
+  try{ x.focus(); }catch(e){}
   ssSfx(kind);
 };
 noteOK = function(){
-  okAt = Date.now(); hideNotice();
+  okAt = Date.now(); hideNotice(); ssDismissed = false;
   if (ssDown){
     ssDown = false;
     const t = document.getElementById("back");

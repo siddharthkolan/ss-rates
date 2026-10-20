@@ -1,6 +1,6 @@
 {
-  "versionCode": 35,
-  "versionName": "2.13",
+  "versionCode": 36,
+  "versionName": "2.14",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "TV: feed fetch pakka (hidden check hataya, stuck fix), error detail footer me"
+  "notes": "Popup me cross (X) button: sirf message band hoga"
 }
