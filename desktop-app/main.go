@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bytes"
 	_ "embed"
 	"encoding/json"
 	"flag"
@@ -28,6 +29,10 @@ var logoPNG []byte
 
 //go:embed favicon.png
 var faviconPNG []byte
+
+// har naye exe par badhao (desktop-version.json me bhi yahi code jata hai)
+const exeVersionCode = 2
+const exeVersionName = "1.2"
 
 const defaultUpstream = "https://bcast.bhavyalaxmibullion.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/bhavyalaxmi"
 const runKey = `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`
@@ -329,6 +334,8 @@ func main() {
 	if upstream == "" {
 		upstream = defaultUpstream
 	}
+	pageHTML = bytes.ReplaceAll(pageHTML, []byte("/*EXE_VER*/0"), []byte(fmt.Sprint(exeVersionCode)))
+	pageHTML = bytes.ReplaceAll(pageHTML, []byte("/*EXE_NAME*/"), []byte(exeVersionName))
 	go poller(upstream)
 
 	host := "127.0.0.1"
