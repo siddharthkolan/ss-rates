@@ -389,6 +389,7 @@ function devCfg(c){
 }
 function applyCfg(c){
   c = devCfg(c);
+  if (typeof c.time24 === "boolean" && typeof TIME24 !== "undefined"){ TIME24 = c.time24; try{ clock(); }catch(e){} }
   if (!c || typeof c !== "object") return;
   let s, n;
   if ((s = cS(c.shopName, 40))) { document.getElementById("shopname").textContent = s; fitName(); }
@@ -749,6 +750,21 @@ JONLY_JS = """  { const lf = document.getElementById("left"), rg = document.getE
   /* BOTTOM STRIP: baaki rates */"""
 src = once(src, "  /* BOTTOM STRIP: baaki rates */", JONLY_JS)
 src = once(src, "</style>", JONLY_CSS + "</style>")
+# 2l) 12 ghante ka time + AM/PM (config "time24": true se wapas 24 ghante), sirf app me
+if not DESKTOP:
+    FMT_JS = """var TIME24 = false;
+function fmtT(ts, small){
+  const d = new Date(ts), p = function(n){ return (n < 10 ? "0" : "") + n; };
+  let h = d.getHours();
+  if (TIME24) return p(h) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+  const ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12;
+  return p(h) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()) + (small ? '<span class="ap">' + ap + '</span>' : " " + ap);
+}
+function hhmmss(ts){ return fmtT(ts, false); }"""
+    src = once(src, 'function hhmmss(ts){ return new Date(ts).toLocaleTimeString("en-GB"); }', FMT_JS)
+    src = once(src, 'document.getElementById("time").textContent = d.toLocaleTimeString("en-GB");',
+               'document.getElementById("time").innerHTML = fmtT(d.getTime(), true);')
+    src = once(src, "</style>", "\n  .clock .t .ap{font-size:.5em;margin-left:.25em;letter-spacing:.04em;font-weight:600;color:var(--gold)}\n</style>")
 # 3) logo relative
 if not DESKTOP:
     src = once(src, 'img.src = "/" + names[i]', 'img.src = names[i]')

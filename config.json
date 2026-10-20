@@ -123,5 +123,20 @@
     "text": "Shree SS Jewellers me Diwali ke khaas offers shuru! Sone-chandi ke gehne dekhne aur offer ki jaankari ke liye dukaan par padharein 🙏 Shubh Deepawali! 🎆"
   },
   "tv": {},
-  "phone": {}
+  "phone": {
+    "leftIds": [
+      "7291",
+      "7627"
+    ],
+    "hideIds": [
+      "7284",
+      "7285",
+      "7286",
+      "7364",
+      "7288",
+      "7634",
+      "7386",
+      "7363"
+    ]
+  }
 }

@@ -1,6 +1,6 @@
 {
-  "versionCode": 45,
-  "versionName": "2.19",
+  "versionCode": 46,
+  "versionName": "2.20",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "Sirf jewellery rates par center layout, 1 sec refresh, tv/phone alag config"
+  "notes": "12 ghante ka time (AM/PM), phone/TV alag rates config"
 }
