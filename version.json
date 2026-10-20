@@ -1,6 +1,6 @@
 {
-  "versionCode": 47,
-  "versionName": "2.21",
+  "versionCode": 48,
+  "versionName": "2.22",
   "apk": "https://raw.githubusercontent.com/siddharthkolan/ss-rates/main/SS-Rates.apk",
-  "notes": "TV: jewellery + comex/future/inr strip ek screen me, size auto"
+  "notes": "TV: GST jewellery rate line-style, bade neeche ke symbols"
 }

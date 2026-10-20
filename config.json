@@ -117,7 +117,35 @@
     "title": "Diwali Offer 🪔✨",
     "text": "Shree SS Jewellers me Diwali ke khaas offers shuru! Sone-chandi ke gehne dekhne aur offer ki jaankari ke liye dukaan par padharein 🙏 Shubh Deepawali! 🎆"
   },
-  "tv": {},
+  "tv": {
+    "jwRows": true,
+    "jewellery": [
+      {
+        "title": "GST",
+        "gst": 3,
+        "items": [
+          {
+            "src": "7291",
+            "label": "22 KT",
+            "factor": 0.92,
+            "unit": "10g"
+          },
+          {
+            "src": "7291",
+            "label": "18 KT",
+            "factor": 0.7538,
+            "unit": "10g"
+          },
+          {
+            "src": "7386",
+            "label": "SILVER",
+            "factor": 0.9,
+            "unit": "kg"
+          }
+        ]
+      }
+    ]
+  },
   "phone": {
     "leftIds": [
       "7291",

@@ -390,6 +390,7 @@ function devCfg(c){
 function applyCfg(c){
   c = devCfg(c);
   if (typeof c.time24 === "boolean" && typeof TIME24 !== "undefined"){ TIME24 = c.time24; try{ clock(); }catch(e){} }
+  if (typeof c.jwRows === "boolean" && typeof JW_ROWS !== "undefined") JW_ROWS = c.jwRows;
   if (!c || typeof c !== "object") return;
   let s, n;
   if ((s = cS(c.shopName, 40))) { document.getElementById("shopname").textContent = s; fitName(); }
@@ -717,6 +718,20 @@ DESK_CSS = """
 src_menu = True
 # 2k) sirf jewellery rates (left khali) => center me, bade, orientation ke hisab se
 JONLY_CSS = """
+  /* TV: jewellery rates "line" style (naam left me, rate right me) + bade neeche ke symbols */
+  @media (orientation: landscape){
+    .jrows .main{display:flex;align-items:stretch}
+    .jrows .left{flex:1;grid-template-rows:none;grid-auto-rows:1fr}
+    .jrows .right{display:none}
+    .jrows .jrow .n1{font-size:calc(2.4 * var(--u))}
+    .jrows .jrow .big{font-size:calc(4.6 * var(--u))}
+    .jrows .jrow .gm{font-size:calc(1.35 * var(--u));color:var(--muted);font-variant-numeric:tabular-nums}
+    .jrows .jrow .unit,.jrows .jrow .st{font-size:calc(1.25 * var(--u))}
+    .jrows .strip{flex-wrap:wrap}
+    .jrows .strip .si{flex:1 1 calc(33% - 1 * var(--u));padding:calc(.8 * var(--u)) calc(1.4 * var(--u))}
+    .jrows .strip .sn{font-size:calc(1.3 * var(--u))}
+    .jrows .strip .sv{font-size:calc(2.5 * var(--u))}
+  }
   /* sirf jewellery rates: left khali ho to rates center me, size auto */
   .jonly .left{display:none}
   @media (orientation: landscape){
@@ -742,7 +757,23 @@ JONLY_CSS = """
     .jonly .tile .v{font-size:calc(2.9 * var(--u))}
   }
 """
-JONLY_JS = """  { const lf = document.getElementById("left"), rg = document.getElementById("right");
+JONLY_JS = """  if (typeof JW_ROWS !== "undefined" && JW_ROWS){
+    const esc = function(s){ return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+    let html = "";
+    document.querySelectorAll("#right .gcard").forEach(function(g){
+      const h = g.querySelector("h3").textContent, s = g.querySelector(".src").textContent;
+      g.querySelectorAll(".tile").forEach(function(t){
+        const v = t.querySelector(".v"), vc = v.className.replace("v", "").trim();
+        html += '<div class="card row jrow"><div class="nm"><div class="n1">' + esc(h) + ' \\u00B7 ' + esc(t.querySelector(".k").textContent) + '</div>'
+          + '<div class="n2"><span class="unit">' + esc(t.querySelector(".ut").textContent) + '</span><span class="st">' + esc(s) + '</span></div></div>'
+          + '<div class="px ps"><span class="big ' + vc + '">' + esc(v.textContent) + '</span><span class="gm">' + esc(t.querySelector(".g").textContent) + '</span></div></div>';
+      });
+    });
+    document.getElementById("left").innerHTML = html;
+    document.getElementById("right").innerHTML = "";
+  }
+  document.body.classList.toggle("jrows", typeof JW_ROWS !== "undefined" && JW_ROWS);
+  { const lf = document.getElementById("left"), rg = document.getElementById("right");
     document.body.classList.toggle("jonly", lf.children.length === 0 && rg.children.length > 0);
     const n = rg.children.length, cols = n > 2 ? 2 : 1;
     rg.style.setProperty("--jc", cols); rg.style.setProperty("--jr", Math.max(Math.ceil(n / cols), 1));
@@ -752,7 +783,7 @@ src = once(src, "  /* BOTTOM STRIP: baaki rates */", JONLY_JS)
 src = once(src, "</style>", JONLY_CSS + "</style>")
 # 2l) 12 ghante ka time + AM/PM (config "time24": true se wapas 24 ghante), sirf app me
 if not DESKTOP:
-    FMT_JS = """var TIME24 = false;
+    FMT_JS = """var TIME24 = false, JW_ROWS = false;
 function fmtT(ts, small){
   const d = new Date(ts), p = function(n){ return (n < 10 ? "0" : "") + n; };
   let h = d.getHours();
